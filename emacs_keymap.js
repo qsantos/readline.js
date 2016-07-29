@@ -1,0 +1,77 @@
+/* Ported from emacs_keymaps.c */
+
+function handle_standard_key(key) {
+    var inserts = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    if (key.charCodeAt() >= 128 || inserts.indexOf(key) >= 0) {
+        rl_insert(1, key);
+        return;
+    }
+    var callback = {
+        'ArrowLeft': rl_backward_char,
+        'ArrowRight': rl_forward_char,
+        'Backspace': rl_rubout,
+        'Delete': rl_delete,
+        'Escape': function() { code.blur(); }, // TODO
+        'End': rl_end_of_line,
+        'Home': rl_beg_of_line,
+        'Enter': rl_newline,  // see Ctrl+j
+    }[key];
+    if (callback !== undefined) {
+        callback(1, key);
+    }
+}
+
+function handle_ctrl_key(key) {
+    var callback = {
+        //'@': rl_set_mark,
+        'a': rl_beg_of_line,
+        'b': rl_backward_char,
+        'd': rl_delete,
+        'e': rl_end_of_line,
+        'f': rl_forward_char,
+        //'g': rl_abort,
+        'h': rl_rubout,
+        //'i': rl_complete,
+        'j': rl_newline,
+        'k': rl_kill_line,
+        //'l': rl_clear_screen,
+        'm': rl_newline,
+        //'n': rl_get_next_history,
+        //'p': rl_get_previous_history,
+        //'q': rl_quoted_insert,
+        //'r': rl_reverse_search_history,
+        //'s': rl_forward_search_history,
+        //'t': rl_transpose_chars,
+        'u': rl_unix_line_discard,
+        //'v': rl_quoted_insert,
+        'w': rl_unix_word_rubout,
+        'y': rl_yank,
+        //']': rl_char_search,
+        //'_': rl_undo_command,
+        'Backspace': rl_rubout,
+    }[key];
+    if (callback !== undefined) {
+        callback(1, key);
+    }
+}
+
+function handle_meta_key(key) {
+    var callback = {
+        'b': rl_backward_word,
+        'c': rl_capitalize_word,
+        'd': rl_kill_word,
+        'f': rl_forward_word,
+        //'l': rl_downcase_word,
+        //'n': rl_noninc_forward_search,
+        //'p': rl_noninc_reverse_search,
+        'r': rl_revert_line,
+        //'t': rl_transpose_words,
+        //'u': rl_upcase_word,
+        'y': rl_yank_pop,
+        //'~': rl_tilde_expand,
+        //'Backspace': rl_backward_kill_word,
+    }[key];
+    if (callback !== undefined) {
+        callback(1, key);
+    }
+}

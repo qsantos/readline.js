@@ -1,0 +1,70 @@
+/* Rough equivalent of display.c */
+
+var code = document.querySelector('#code');
+var enableInput = true;
+
+function escape(text) {
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/ /g, '&nbsp;');
+}
+
+var rl_prompt = "";
+var rl_linefunc;
+function rl_callback_handler_install(prompt, linefunc) {
+    rl_prompt = prompt;
+    rl_linefunc = linefunc;
+    update();
+}
+
+function update() {
+    var before = rl_line_buffer.substring(0, rl_point);
+    var inner;
+    if (rl_point == rl_line_buffer.length) {
+        inner = '&nbsp';
+    } else {
+        inner = escape(rl_line_buffer.charAt(rl_point));
+    }
+    var inner = '<span class="caret">' + inner + '</span>';
+    var after = rl_line_buffer.substring(rl_point + 1);
+    code.innerHTML = rl_prompt + escape(before) + inner + escape(after);
+}
+
+code.addEventListener('focus', function(event) {
+    document.querySelector('#unfocus_help').style.visibility = 'visible';
+});
+
+code.addEventListener('blur', function(event) {
+    document.querySelector('#unfocus_help').style.visibility = 'hidden';
+});
+
+code.addEventListener('keydown', function(event) {
+    if (!enableInput)
+        return;
+
+    if (event.altKey) {
+        handle_meta_key(event.key.toLowerCase());
+    } else if (event.ctrlKey) {
+        handle_ctrl_key(event.key.toLowerCase());
+    } else if (event.key == 'Escape') {
+        code.blur();
+    } else {
+        handle_standard_key(event.key);
+    }
+    update();
+    event.preventDefault();
+});
+
+// https://github.com/liftoff/GateOne/issues/188
+code.addEventListener('compositionstart', function(event) {
+    enableInput = false;
+    event.preventDefault();
+});
+
+code.addEventListener('compositionend', function(event) {
+    rl_insert_text(event.data);
+    update();
+    enableInput = true;
+    event.preventDefault();
+});
+
+rl_callback_handler_install('<span style="color:green">$</span> ', alert);
+code.focus();
