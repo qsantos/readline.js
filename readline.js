@@ -31,6 +31,11 @@ var secondLatestCut = '';
 
 function rl_kill_text(from, to) {
     rl_line_buffer = rl_line_buffer.substring(0, from) + rl_line_buffer.substring(to);
+    if (rl_point > to) {
+        rl_point -= to - from;
+    } else if (rl_point > from) {
+        rl_point = from;
+    }
 }
 
 /* Delete the string between FROM and TO.  FROM is inclusive, TO is not.
