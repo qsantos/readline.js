@@ -52,15 +52,12 @@ code.addEventListener('keydown', function(event) {
     if (!enableInput)
         return;
 
-    if (event.altKey) {
-        handle_meta_key(event.key.toLowerCase());
-    } else if (event.ctrlKey) {
-        handle_ctrl_key(event.key.toLowerCase());
-    } else if (event.key == 'Escape') {
+    if (event.key == 'Escape') {
         code.blur();
     } else {
-        handle_standard_key(event.key);
+        rl_handle_event(event);
     }
+
     update();
     event.preventDefault();
 });

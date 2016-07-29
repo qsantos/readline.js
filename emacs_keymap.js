@@ -12,7 +12,6 @@ function handle_standard_key(key) {
         'ArrowRight': rl_forward_char,
         'Backspace': rl_rubout,
         'Delete': rl_delete,
-        'Escape': function() { code.blur(); }, // TODO
         'End': rl_end_of_line,
         'Home': rl_beg_of_line,
         'Enter': rl_newline,  // see Ctrl+j

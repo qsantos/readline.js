@@ -466,3 +466,19 @@ function rl_revert_line(count, key) {
 //extern int rl_vi_fword PARAMS((int, int));
 //extern int rl_vi_bword PARAMS((int, int));
 //extern int rl_vi_eword PARAMS((int, int));
+
+
+
+function rl_handle_event(event) {
+    if (event.altKey) {
+        if (event.ctrlKey) {
+            handle_meta_ctrl_key(event.key.toLowerCase());
+        } else {
+            handle_meta_key(event.key.toLowerCase());
+        }
+    } else if (event.ctrlKey) {
+        handle_ctrl_key(event.key.toLowerCase());
+    } else {
+        handle_standard_key(event.key);
+    }
+}
