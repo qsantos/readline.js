@@ -72,12 +72,31 @@ function rl_insert_text(text) {
     rl_point += text.length;
 }
 
+/* What to do when you abort reading an argument. */
+function rl_discard_argument() {
+    rl_numeric_arg = 1;
+    rl_explicit_arg = false;
+    rl_arg_sign = 1;
+}
 
 /********************************************/
 /* Bindable commands for numeric arguments. */
 /********************************************/
 
-//extern int rl_digit_argument PARAMS((int, int));
+/* Start a numeric argument with initial value KEY */
+function rl_digit_argument(count, key) {
+    if (key == '-') {
+        rl_arg_sign = -1;
+        return;
+    }
+    if (rl_explicit_arg) {
+        rl_numeric_arg *= 10;
+        rl_numeric_arg += parseInt(key);
+    } else {
+        rl_numeric_arg = parseInt(key);
+    }
+    rl_explicit_arg = true;
+}
 //extern int rl_universal_argument PARAMS((int, int));
 
 /********************************************/
@@ -519,6 +538,7 @@ function rl_handle_event(event) {
             rl_insert(count, event.key);
         }
         rl_insert_next = false;
+        rl_discard_argument();
         return true;
     }
 
@@ -538,6 +558,9 @@ function rl_handle_event(event) {
     }
     if (action !== undefined) {
         action(count, event.key);
+        if (action !== rl_digit_argument) {
+            rl_discard_argument();
+        }
         return true;
     }
     return false;
