@@ -244,33 +244,39 @@ function rl_delete(count, key) {
 
 /* Uppercase the word at point. */
 function rl_upcase_word(count, key) {
-    var start = rl_point;
-    rl_forward_word(count, 0);
-    var stop = rl_point;
-
-    var word = rl_line_buffer.substring(start, stop);
-    rl_kill_text(start, stop);
-    rl_insert_text(word.toUpperCase());
+    rl_change_case(count, String.toUpperCase);
 }
 
 /* Lowercase the word at point. */
 function rl_downcase_word(count, key) {
+    rl_change_case(count, String.toLowerCase);
+}
+
+/* Upcase the first letter, downcase the rest. */
+function CapCase(text) {
+    return text.split(" ").map(function(word) {
+        return word.charAt(0).toUpperCase() + word.substring(1);
+    }).join(" ");
+}
+function rl_capitalize_word(count, key) {
+    rl_change_case(count, CapCase);
+}
+
+function rl_change_case(count, op) {
     var start = rl_point;
     rl_forward_word(count, 0);
     var stop = rl_point;
 
-    var word = rl_line_buffer.substring(start, stop);
-    rl_kill_text(start, stop);
-    rl_insert_text(word.toLowerCase());
-}
+    if (count < 0) {
+        // rl_forward_word went backward
+        var tmp = start;
+        start = stop;
+        stop = tmp;
+    }
 
-/* Upcase the first letter, downcase the rest. */
-function rl_capitalize_word(count, key) {
-    // note: actually incorrect, but CPython behaves that way too
-    var c = rl_line_buffer[rl_point];
-    rl_delete();
-    rl_insert_text(c.toUpperCase());
-    rl_forward_char(1, 0);
+    var extract = rl_line_buffer.substring(start, stop);
+    rl_kill_text(start, stop);
+    rl_insert_text(op(extract));
 }
 
 /***********************************************************/
