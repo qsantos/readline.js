@@ -57,6 +57,28 @@ function handle_ctrl_key(key) {
 
 function handle_meta_key(key) {
     var callback = {
+        //' ': rl_set_mark,
+        //'#': rl_insert_comment,
+        //'&': rl_tilde_expand,
+        //'*': rl_insert_completions,
+        //'-': rl_digit_argument,
+        //'.': rl_yank_last_arg,
+        //'0': rl_digit_argument,
+        //'1': rl_digit_argument,
+        //'2': rl_digit_argument,
+        //'3': rl_digit_argument,
+        //'4': rl_digit_argument,
+        //'5': rl_digit_argument,
+        //'6': rl_digit_argument,
+        //'7': rl_digit_argument,
+        //'8': rl_digit_argument,
+        //'9': rl_digit_argument,
+        //'<': rl_beginning_of_history,
+        //'=': rl_possible_completions,
+        //'>': rl_end_of_history,
+        //'?': rl_possible_completions,
+        //'\': rl_delete_horizontal_space,
+        //'_': rl_yank_last_arg,
         'b': rl_backward_word,
         'c': rl_capitalize_word,
         'd': rl_kill_word,
@@ -69,7 +91,24 @@ function handle_meta_key(key) {
         'u': rl_upcase_word,
         'y': rl_yank_pop,
         //'~': rl_tilde_expand,
-        //'Backspace': rl_backward_kill_word,
+        //'backspace': rl_backward_kill_word,
+    }[key];
+    if (callback !== undefined) {
+        callback(1, key);
+    }
+}
+
+function handle_meta_ctrl_key(key) {
+    var callback = {
+        //'g': rl_abort,
+        //'h': rl_backward_kill_word,
+        //'i': rl_tab_insert,
+        //'j': rl_vi_editing_mode,
+        //'m': rl_vi_editing_mode,
+        'r': rl_revert_line,
+        //'y': rl_yank_nth_arg,
+        //'[': rl_complete,
+        //']': rl_backward_char_search,
     }[key];
     if (callback !== undefined) {
         callback(1, key);
