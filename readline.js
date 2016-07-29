@@ -13,6 +13,9 @@ var rl_line_buffer = ''
 
 var rl_point = 0;
 
+/* Insert the next typed character verbatim. */
+var rl_insert_next = false;
+
 var latestCut = '';
 var secondLatestCut = '';
 
@@ -119,7 +122,11 @@ function rl_backward_word(count, key) {
 function rl_insert(count, key) {
     rl_insert_text(key);
 }
-//extern int rl_quoted_insert PARAMS((int, int));
+
+/* Insert a raw character (e.g. ^A) */
+function rl_quoted_insert(count, key) {
+    rl_insert_next = true;
+}
 //extern int rl_tab_insert PARAMS((int, int));
 
 /* What to do when a NEWLINE is pressed.  We accept the whole line. */
@@ -470,6 +477,37 @@ function rl_revert_line(count, key) {
 
 
 function rl_handle_event(event) {
+    if (rl_insert_next) {
+        // still ignore Ctrl, Alt, Shift by themselves
+        if (event.key.length > 1) {
+            return;
+        }
+
+        var text;
+        if (event.altKey && event.ctrlKey) {
+            // technically, \x1b/escape/meta/alt is inserted
+            // and the Ctrl+key combination is executed;
+            // this is uncanny so we'll skip that part
+            text = '\x1b';
+        } else if (event.altKey) {
+            text = '\x1b' + event.key;
+        } else if (event.ctrlKey) {
+            var code = event.key.toUpperCase().charCodeAt() - 64;
+            if (code == -1) {  // ^? = \x7f
+                text = String.fromCharCode(127);
+            } else if (code >= 0) {
+                text = String.fromCharCode(code);
+            } else {
+                text = event.key;
+            }
+        } else {
+            text = event.key;
+        }
+        rl_insert_text(text);
+        rl_insert_next = false;
+        return;
+    }
+
     if (event.altKey) {
         if (event.ctrlKey) {
             handle_meta_ctrl_key(event.key.toLowerCase());
