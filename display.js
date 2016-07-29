@@ -56,10 +56,13 @@ code.addEventListener('keydown', function(event) {
         code.blur();
         update();
         event.preventDefault();
-    } else if (rl_handle_event(event)) {
-        update();
+    } else if (event.key == 'V' && event.ctrlKey) {  // Ctrl+Shift+V = pasting
+    } else {
+        if (rl_handle_event(event)) {
+            update();
+        }
+        event.preventDefault();
     }
-    event.preventDefault();
 });
 
 // https://github.com/liftoff/GateOne/issues/188
@@ -72,6 +75,12 @@ code.addEventListener('compositionend', function(event) {
     rl_insert_text(event.data);
     update();
     enableInput = true;
+    event.preventDefault();
+});
+
+code.addEventListener('paste', function(event) {
+    rl_insert_text(event.clipboardData.getData("text/plain"));
+    update();
     event.preventDefault();
 });
 
