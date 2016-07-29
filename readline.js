@@ -480,7 +480,7 @@ function rl_handle_event(event) {
     if (rl_insert_next) {
         // still ignore Ctrl, Alt, Shift by themselves
         if (event.key.length > 1) {
-            return;
+            return false;
         }
 
         var text;
@@ -505,18 +505,18 @@ function rl_handle_event(event) {
         }
         rl_insert_text(text);
         rl_insert_next = false;
-        return;
+        return true;
     }
 
     if (event.altKey) {
         if (event.ctrlKey) {
-            handle_meta_ctrl_key(event.key.toLowerCase());
+            return handle_meta_ctrl_key(event.key.toLowerCase());
         } else {
-            handle_meta_key(event.key.toLowerCase());
+            return handle_meta_key(event.key.toLowerCase());
         }
     } else if (event.ctrlKey) {
-        handle_ctrl_key(event.key.toLowerCase());
+        return handle_ctrl_key(event.key.toLowerCase());
     } else {
-        handle_standard_key(event.key);
+        return handle_standard_key(event.key);
     }
 }

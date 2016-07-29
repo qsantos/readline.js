@@ -54,11 +54,11 @@ code.addEventListener('keydown', function(event) {
 
     if (event.key == 'Escape') {
         code.blur();
-    } else {
-        rl_handle_event(event);
+        update();
+        event.preventDefault();
+    } else if (rl_handle_event(event)) {
+        update();
     }
-
-    update();
     event.preventDefault();
 });
 

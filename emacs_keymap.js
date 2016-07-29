@@ -4,7 +4,7 @@ function handle_standard_key(key) {
     // printable characters are just inserted
     if (key.length == 1 && key.charCodeAt() >= 32) {
         rl_insert(1, key);
-        return;
+        return true;
     }
 
     var callback = {
@@ -18,7 +18,9 @@ function handle_standard_key(key) {
     }[key];
     if (callback !== undefined) {
         callback(1, key);
+        return true;
     }
+    return false;
 }
 
 function handle_ctrl_key(key) {
@@ -52,7 +54,9 @@ function handle_ctrl_key(key) {
     }[key];
     if (callback !== undefined) {
         callback(1, key);
+        return true;
     }
+    return false;
 }
 
 function handle_meta_key(key) {
@@ -95,7 +99,9 @@ function handle_meta_key(key) {
     }[key];
     if (callback !== undefined) {
         callback(1, key);
+        return true;
     }
+    return false;
 }
 
 function handle_meta_ctrl_key(key) {
@@ -112,5 +118,7 @@ function handle_meta_ctrl_key(key) {
     }[key];
     if (callback !== undefined) {
         callback(1, key);
+        return true;
     }
+    return false;
 }
