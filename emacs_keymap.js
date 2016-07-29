@@ -1,11 +1,12 @@
 /* Ported from emacs_keymaps.c */
 
 function handle_standard_key(key) {
-    var inserts = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-    if (key.charCodeAt() >= 128 || inserts.indexOf(key) >= 0) {
+    // printable characters are just inserted
+    if (key.length == 1 && key.charCodeAt() >= 32) {
         rl_insert(1, key);
         return;
     }
+
     var callback = {
         'ArrowLeft': rl_backward_char,
         'ArrowRight': rl_forward_char,
