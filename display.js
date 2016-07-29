@@ -4,7 +4,19 @@ var code = document.querySelector('#code');
 var enableInput = true;
 
 function escape(text) {
-    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/ /g, '&nbsp;');
+    // non-printable characters
+    text = text.replace(/\x1b/g, '^[');  // escape
+    text = text.replace(/[\x00-\x1f]/g, function(c) {
+        return '^' + String.fromCharCode(64 + c.charCodeAt());
+    });
+    text = text.replace(/\x7f/g, '^?');
+
+    // html entities
+    text = text.replace(/&/g, '&amp;');
+    text = text.replace(/</g, '&lt;');
+    text = text.replace(/ /g, '&nbsp;');
+
+    return text;
 }
 
 var rl_prompt = "";
