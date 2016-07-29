@@ -16,6 +16,16 @@ var rl_point = 0;
 /* Insert the next typed character verbatim. */
 var rl_insert_next = false;
 
+/* The current value of the numeric argument specified by the user. */
+var rl_numeric_arg = 1;
+
+/* Non-zero if an argument was typed. */
+var rl_explicit_arg = false;
+
+/* Temporary value used while generating the argument. */
+var rl_arg_sign = 1;
+
+
 var latestCut = '';
 var secondLatestCut = '';
 
@@ -477,6 +487,9 @@ function rl_revert_line(count, key) {
 
 
 function rl_handle_event(event) {
+    var count = rl_numeric_arg * rl_arg_sign;
+    count = Math.min(count, 1000000);
+
     if (rl_insert_next) {
         // still ignore Ctrl, Alt, Shift by themselves
         if (event.key.length > 1) {
@@ -488,22 +501,23 @@ function rl_handle_event(event) {
             // technically, \x1b/escape/meta/alt is inserted
             // and the Ctrl+key combination is executed;
             // this is uncanny so we'll skip that part
-            text = '\x1b';
+            rl_insert(count, '\x1b');
         } else if (event.altKey) {
-            text = '\x1b' + event.key;
+            rl_insert(count, '\x1b');
+            rl_insert(1, event.key);
         } else if (event.ctrlKey) {
-            var code = event.key.toUpperCase().charCodeAt() - 64;
-            if (code == -1) {  // ^? = \x7f
-                text = String.fromCharCode(127);
-            } else if (code >= 0) {
-                text = String.fromCharCode(code);
+            if (event.key == '?') {  // ^?
+                rl_insert(count, '\x7f');
+            } else if (event.key >= '@') {
+                var code = event.key.toUpperCase().charCodeAt() - 64;
+                var c = String.fromCharCode(code);
+                rl_insert(count, c);
             } else {
-                text = event.key;
+                rl_insert(count, event.key);
             }
         } else {
-            text = event.key;
+            rl_insert(count, event.key);
         }
-        rl_insert_text(text);
         rl_insert_next = false;
         return true;
     }
@@ -523,7 +537,7 @@ function rl_handle_event(event) {
         action = handle_standard_key(event.key);
     }
     if (action !== undefined) {
-        action(1, event.key);
+        action(count, event.key);
         return true;
     }
     return false;
