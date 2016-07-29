@@ -38,12 +38,16 @@ function nextWordStop() {
     return i;
 }
 
+function rl_kill_text(from, to) {
+    rl_line_buffer = rl_line_buffer.substring(0, from) + rl_line_buffer.substring(to);
+}
+
 /* Delete the string between FROM and TO.  FROM is inclusive, TO is not.
    Returns the number of characters deleted. */
-function rl_delete_text(from, to) {
+function rl_delete_text(start, stop) {
     secondLatestCut = latestCut;
-    latestCut = rl_line_buffer.substring(from, to);
-    rl_line_buffer = rl_line_buffer.substring(0, from) + rl_line_buffer.substring(to);
+    latestCut = rl_line_buffer.substring(start, stop);
+    rl_kill_text(start, stop);
 }
 
 /* Insert a string of text into the line at point.  This is the only
@@ -154,8 +158,21 @@ function rl_delete(count, key) {
 /* Bindable commands for changing case. */
 /****************************************/
 
-//extern int rl_upcase_word PARAMS((int, int));
-//extern int rl_downcase_word PARAMS((int, int));
+/* Uppercase the word at point. */
+function rl_upcase_word(count, key) {
+    var next = nextWordStop();
+    var word = rl_line_buffer.substring(rl_point, next);
+    rl_kill_text(rl_point, next);
+    rl_insert_text(word.toUpperCase());
+}
+
+/* Lowercase the word at point. */
+function rl_downcase_word(count, key) {
+    var next = nextWordStop();
+    var word = rl_line_buffer.substring(rl_point, next);
+    rl_kill_text(rl_point, next);
+    rl_insert_text(word.toLowerCase());
+}
 
 /* Upcase the first letter, downcase the rest. */
 function rl_capitalize_word(count, key) {
