@@ -188,7 +188,26 @@ function rl_capitalize_word(count, key) {
 /***********************************************************/
 
 //extern int rl_transpose_words PARAMS((int, int));
-//extern int rl_transpose_chars PARAMS((int, int));
+
+/* Transpose the characters at point.  If point is at the end of the line,
+   then transpose the characters before point. */
+function rl_transpose_chars(count, key) {
+    if (rl_line_buffer.length < 2) {
+        return;
+    }
+
+    if (rl_point == 0) {
+        return;
+    }
+
+    rl_forward_char();
+
+    var char_1 = rl_line_buffer[rl_point-1];
+    var char_2 = rl_line_buffer[rl_point-2];
+    rl_rubout();
+    rl_rubout();
+    rl_insert_text(char_1 + char_2);
+}
 
 /**************************************************/
 /* Bindable commands for searching within a line. */

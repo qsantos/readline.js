@@ -41,7 +41,7 @@ function handle_ctrl_key(key) {
         //'q': rl_quoted_insert,
         //'r': rl_reverse_search_history,
         //'s': rl_forward_search_history,
-        //'t': rl_transpose_chars,
+        't': rl_transpose_chars,
         'u': rl_unix_line_discard,
         //'v': rl_quoted_insert,
         'w': rl_unix_word_rubout,
