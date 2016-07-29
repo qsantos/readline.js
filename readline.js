@@ -29,28 +29,6 @@ var rl_arg_sign = 1;
 var latestCut = '';
 var secondLatestCut = '';
 
-function prevWordStop() {
-    var i = rl_point;
-    while (i > 0 && rl_line_buffer[i-1] == ' ') {
-        i--;
-    }
-    while (i > 0 && rl_line_buffer[i-1] != ' ') {
-        i--;
-    }
-    return i;
-}
-
-function nextWordStop() {
-    var i = rl_point;
-    while (i < rl_line_buffer.length && rl_line_buffer[i-1] == ' ') {
-        i++;
-    }
-    while (i < rl_line_buffer.length && rl_line_buffer[i-1] != ' ') {
-        i++;
-    }
-    return i;
-}
-
 function rl_kill_text(from, to) {
     rl_line_buffer = rl_line_buffer.substring(0, from) + rl_line_buffer.substring(to);
 }
@@ -131,12 +109,38 @@ function rl_end_of_line(count, key) {
 
 /* Move forward a word.  We do what Emacs does.  Handles multibyte chars. */
 function rl_forward_word(count, key) {
-    rl_point = nextWordStop();
+    /* If we are not in a word, move forward until we are in one.
+       Then, move forward until we hit a non-alphabetic character. */
+    while (rl_point < rl_line_buffer.length) {
+        if (rl_line_buffer[rl_point] != ' ') {
+            break;
+        }
+        rl_point++;
+    }
+    while (rl_point < rl_line_buffer.length) {
+        if (rl_line_buffer[rl_point] == ' ') {
+            break;
+        }
+        rl_point++;
+    }
 }
 
 /* Move backward a word.  We do what Emacs does.  Handles multibyte chars. */
 function rl_backward_word(count, key) {
-    rl_point = prevWordStop();
+    /* Like rl_forward_word (), except that we look at the characters
+       just before point. */
+    while (rl_point > 0) {
+        if (rl_line_buffer[rl_point-1] != ' ') {
+            break;
+        }
+        rl_point--;
+    }
+    while (rl_point > 0) {
+        if (rl_line_buffer[rl_point-1] == ' ') {
+            break;
+        }
+        rl_point--;
+    }
 }
 //extern int rl_refresh_line PARAMS((int, int));
 //extern int rl_clear_screen PARAMS((int, int));
@@ -196,17 +200,23 @@ function rl_delete(count, key) {
 
 /* Uppercase the word at point. */
 function rl_upcase_word(count, key) {
-    var next = nextWordStop();
-    var word = rl_line_buffer.substring(rl_point, next);
-    rl_kill_text(rl_point, next);
+    var start = rl_point;
+    rl_forward_word(count, 0);
+    var stop = rl_point;
+
+    var word = rl_line_buffer.substring(start, stop);
+    rl_kill_text(start, stop);
     rl_insert_text(word.toUpperCase());
 }
 
 /* Lowercase the word at point. */
 function rl_downcase_word(count, key) {
-    var next = nextWordStop();
-    var word = rl_line_buffer.substring(rl_point, next);
-    rl_kill_text(rl_point, next);
+    var start = rl_point;
+    rl_forward_word(count, 0);
+    var stop = rl_point;
+
+    var word = rl_line_buffer.substring(start, stop);
+    rl_kill_text(start, stop);
     rl_insert_text(word.toLowerCase());
 }
 
@@ -216,7 +226,7 @@ function rl_capitalize_word(count, key) {
     var c = rl_line_buffer[rl_point];
     rl_delete();
     rl_insert_text(c.toUpperCase());
-    rl_point = nextWordStop();
+    rl_forward_char(1, 0);
 }
 
 /***********************************************************/
@@ -307,8 +317,9 @@ function rl_transpose_chars(count, key) {
 
 /* Delete the word at point, saving the text in the kill ring. */
 function rl_kill_word(count, key) {
-    var next = nextWordStop();
-    rl_delete_text(rl_point, next);
+    var start = rl_point;
+    rl_forward_word(count, key);
+    rl_delete_text(start, rl_point);
 }
 //extern int rl_backward_kill_word PARAMS((int, int));
 
@@ -323,9 +334,9 @@ function rl_kill_line(count, key) {
 /* This does what C-w does in Unix.  We can't prevent people from
    using behaviour that they expect. */
 function rl_unix_word_rubout(count, key) {
-    var prev = prevWordStop();
-    rl_delete_text(prev, rl_point);
-    rl_point = prev;
+    var stop = rl_point;
+    rl_backward_word(count, 0);
+    rl_delete_text(rl_point, stop);
 }
 //extern int rl_unix_filename_rubout PARAMS((int, int));
 
