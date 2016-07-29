@@ -508,15 +508,23 @@ function rl_handle_event(event) {
         return true;
     }
 
+    // dispatch
+    var action;
+    var folded = event.key.toLowerCase();
     if (event.altKey) {
         if (event.ctrlKey) {
-            return handle_meta_ctrl_key(event.key.toLowerCase());
+            action = handle_meta_ctrl_key(folded);
         } else {
-            return handle_meta_key(event.key.toLowerCase());
+            action = handle_meta_key(folded);
         }
     } else if (event.ctrlKey) {
-        return handle_ctrl_key(event.key.toLowerCase());
+        action = handle_ctrl_key(folded);
     } else {
-        return handle_standard_key(event.key);
+        action = handle_standard_key(event.key);
     }
+    if (action !== undefined) {
+        action(1, event.key);
+        return true;
+    }
+    return false;
 }

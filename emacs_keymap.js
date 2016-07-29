@@ -3,11 +3,10 @@
 function handle_standard_key(key) {
     // printable characters are just inserted
     if (key.length == 1 && key.charCodeAt() >= 32) {
-        rl_insert(1, key);
-        return true;
+        return rl_insert;
     }
 
-    var callback = {
+    return {
         'ArrowLeft': rl_backward_char,
         'ArrowRight': rl_forward_char,
         'Backspace': rl_rubout,
@@ -16,15 +15,10 @@ function handle_standard_key(key) {
         'Home': rl_beg_of_line,
         'Enter': rl_newline,  // see Ctrl+j
     }[key];
-    if (callback !== undefined) {
-        callback(1, key);
-        return true;
-    }
-    return false;
 }
 
 function handle_ctrl_key(key) {
-    var callback = {
+    return {
         //'@': rl_set_mark,
         'a': rl_beg_of_line,
         'b': rl_backward_char,
@@ -52,15 +46,10 @@ function handle_ctrl_key(key) {
         //'_': rl_undo_command,
         'backspace': rl_unix_word_rubout,  // non-standard
     }[key];
-    if (callback !== undefined) {
-        callback(1, key);
-        return true;
-    }
-    return false;
 }
 
 function handle_meta_key(key) {
-    var callback = {
+    return {
         //' ': rl_set_mark,
         //'#': rl_insert_comment,
         //'&': rl_tilde_expand,
@@ -97,15 +86,10 @@ function handle_meta_key(key) {
         //'~': rl_tilde_expand,
         //'backspace': rl_backward_kill_word,
     }[key];
-    if (callback !== undefined) {
-        callback(1, key);
-        return true;
-    }
-    return false;
 }
 
 function handle_meta_ctrl_key(key) {
-    var callback = {
+    return {
         //'g': rl_abort,
         //'h': rl_backward_kill_word,
         //'i': rl_tab_insert,
@@ -116,9 +100,4 @@ function handle_meta_ctrl_key(key) {
         //'[': rl_complete,
         //']': rl_backward_char_search,
     }[key];
-    if (callback !== undefined) {
-        callback(1, key);
-        return true;
-    }
-    return false;
 }
