@@ -48,7 +48,7 @@ function handle_ctrl_key(key) {
         'y': rl_yank,
         //']': rl_char_search,
         //'_': rl_undo_command,
-        'Backspace': rl_rubout,
+        'backspace': rl_unix_word_rubout,  // non-standard
     }[key];
     if (callback !== undefined) {
         callback(1, key);
