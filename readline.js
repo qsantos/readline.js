@@ -94,7 +94,12 @@ function rl_digit_argument(count, key) {
 
 /* Move forward COUNT characters. */
 function rl_forward_char(count, key) {
-    rl_point += 1;
+    if (count < 0) {
+        rl_backward_char(-count, key);
+        return;
+    }
+
+    rl_point += count;
     if (rl_point > rl_line_buffer.length) {
         rl_point = rl_line_buffer.length;
     }
@@ -102,7 +107,12 @@ function rl_forward_char(count, key) {
 
 /* Move backward COUNT characters. */
 function rl_backward_char(count, key) {
-    rl_point -= 1;
+    if (count < 0) {
+        rl_forward_char(-count, key);
+        return;
+    }
+
+    rl_point -= count;
     if (rl_point < 0) {
         rl_point = 0;
     }
@@ -120,37 +130,51 @@ function rl_end_of_line(count, key) {
 
 /* Move forward a word.  We do what Emacs does.  Handles multibyte chars. */
 function rl_forward_word(count, key) {
-    /* If we are not in a word, move forward until we are in one.
-       Then, move forward until we hit a non-alphabetic character. */
-    while (rl_point < rl_line_buffer.length) {
-        if (rl_line_buffer[rl_point] != ' ') {
-            break;
-        }
-        rl_point++;
+    if (count < 0) {
+        rl_backward_word(-count, key);
+        return;
     }
-    while (rl_point < rl_line_buffer.length) {
-        if (rl_line_buffer[rl_point] == ' ') {
-            break;
+
+    for (var _ = 0; _ < count; _++) {
+        /* If we are not in a word, move forward until we are in one.
+           Then, move forward until we hit a non-alphabetic character. */
+        while (rl_point < rl_line_buffer.length) {
+            if (rl_line_buffer[rl_point] != ' ') {
+                break;
+            }
+            rl_point++;
         }
-        rl_point++;
+        while (rl_point < rl_line_buffer.length) {
+            if (rl_line_buffer[rl_point] == ' ') {
+                break;
+            }
+            rl_point++;
+        }
     }
 }
 
 /* Move backward a word.  We do what Emacs does.  Handles multibyte chars. */
 function rl_backward_word(count, key) {
-    /* Like rl_forward_word (), except that we look at the characters
-       just before point. */
-    while (rl_point > 0) {
-        if (rl_line_buffer[rl_point-1] != ' ') {
-            break;
-        }
-        rl_point--;
+    if (count < 0) {
+        rl_forward_word(-count, key);
+        return;
     }
-    while (rl_point > 0) {
-        if (rl_line_buffer[rl_point-1] == ' ') {
-            break;
+
+    for (var _ = 0; _ < count; _++) {
+        /* Like rl_forward_word (), except that we look at the characters
+           just before point. */
+        while (rl_point > 0) {
+            if (rl_line_buffer[rl_point-1] != ' ') {
+                break;
+            }
+            rl_point--;
         }
-        rl_point--;
+        while (rl_point > 0) {
+            if (rl_line_buffer[rl_point-1] == ' ') {
+                break;
+            }
+            rl_point--;
+        }
     }
 }
 //extern int rl_refresh_line PARAMS((int, int));
