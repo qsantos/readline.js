@@ -75,5 +75,24 @@ code.addEventListener('compositionend', function(event) {
     event.preventDefault();
 });
 
+code.addEventListener('drop', function(event) {
+    var data = event.dataTransfer;
+    var text;
+    if (data.types.contains("text/x-moz-url")) { // file
+        text = data.getData("text/x-moz-url");
+        // strip file:// prefix
+        if (text.startsWith("file://")) {
+            text = text.substring(7);
+        }
+    } else if (data.types.contains("text/x-moz-text-internal")) {  // tab
+        text = data.getData("text/x-moz-text-internal");
+    } else { // Other
+        text = data.getData("text/plain");
+    }
+    rl_insert_text(text);
+    update();
+    event.preventDefault();
+});
+
 rl_callback_handler_install('<span style="color:green">$</span> ', alert);
 code.focus();
