@@ -91,6 +91,8 @@ function rl_read_key(callback) {
     _rl_reading_key_callback = callback;
 }
 
+var _rl_overwrite = false;
+
 var _rl_latest_cut = '';
 var _rl_second_latest_cut = '';
 
@@ -266,6 +268,9 @@ function rl_backward_word(count, key) {
 
 /* Insert a character. */
 function rl_insert(count, key) {
+    if (_rl_overwrite) {
+        rl_delete(count, 0);
+    }
     rl_insert_text(key, count);
 }
 
@@ -558,7 +563,15 @@ function rl_get_previous_history(count, key) {
 /* Bindable commands to change the insert mode (insert or overwrite) */
 /*********************************************************************/
 
-//extern int rl_overwrite_mode PARAMS((int, int));
+function rl_overwrite_mode(count, key) {
+    if (!rl_explicit_arg) {
+        _rl_overwrite = ! _rl_overwrite;
+    } else if (count > 0) {
+        _rl_overwrite = true;
+    } else {
+        _rl_overwrite = false;
+    }
+}
 
 /************************************************/
 /* Bindable commands for managing key bindings. */

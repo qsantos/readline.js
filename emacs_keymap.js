@@ -15,6 +15,7 @@ function handle_standard_key(key) {
         'Delete': rl_delete,
         'End': rl_end_of_line,
         'Home': rl_beg_of_line,
+        'Insert': rl_overwrite_mode,  // non-standard
         'Enter': rl_newline,  // see Ctrl+j
     }[key];
 }
