@@ -289,6 +289,22 @@ function rl_insert_comment(count, key) {
     rl_newline (1, '\n');
 }
 
+/* Put the beginning of the line between single quotes. */
+function rl_quote(count, key) {
+    var quoted = rl_line_buffer.substring(0, rl_point);
+    quoted = quoted.replace(/'/g, "'\\''");
+    rl_kill_text(0, rl_point);
+    rl_beg_of_line(0, 1);
+    rl_insert_text("'" + quoted + "'");
+}
+
+/* Put the full line between single quotes. */
+function rl_quote_full(count, key) {
+    var quoted = rl_line_buffer.quoted.replace(/'/g, "\\'");
+    rl_line_buffer = "'" + quoted + "'";
+    rl_end_of_line(1, 0);
+}
+
 /****************************************/
 /* Bindable commands for changing case. */
 /****************************************/

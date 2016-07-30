@@ -51,9 +51,11 @@ function handle_ctrl_key(key) {
 function handle_meta_key(key) {
     return {
         //' ': rl_set_mark,
+        '"': rl_quote,  // non-standard (from zsh)
         '#': rl_insert_comment,
         '%': rl_maching_paren,  // non-standard
         //'&': rl_tilde_expand,
+        "'": rl_quote_full,  // non-standard (from zsh)
         //'*': rl_insert_completions,
         '-': rl_digit_argument,
         //'.': rl_yank_last_arg,
@@ -91,6 +93,8 @@ function handle_meta_key(key) {
 
 function handle_meta_ctrl_key(key) {
     return {
+        '"': rl_quote,  // non-standard (from zsh)
+        "'": rl_quote_full,  // non-standard (from zsh)
         //'g': rl_abort,
         'h': rl_backward_kill_word,
         'i': rl_tab_insert,
