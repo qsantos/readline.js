@@ -27,6 +27,9 @@ var rl_explicit_arg = false;
 /* Temporary value used while generating the argument. */
 var rl_arg_sign = 1;
 
+/* The address of the last command function Readline executed. */
+var _rl_last_func = undefined;
+
 /* The string marking the beginning of a comment. */
 var rl_comment_begin = '#';
 
@@ -698,9 +701,21 @@ function rl_yank(count, key) {
    before point is identical to the current kill item, then
    delete that text from the line, rotate the index down, and
    yank back some other text. */
+/* Replace previously yanked text by the previous in the kill ring. */
 function rl_yank_pop(count, key) {
-    rl_insert_text(_rl_second_latest_cut, count);
+    if (_rl_last_func != rl_yank && _rl_last_func != rl_yank_pop) {
+        return;
+    }
+
+    rl_undo_command(1, 0);
+    _rl_kill_index--;
+    if (_rl_kill_index < 0) {
+        _rl_kill_index = _rl_kill_ring.length - 1;
+    }
+
+    rl_yank(1, 0);
 }
+
 //extern int rl_yank_nth_arg PARAMS((int, int));
 //extern int rl_yank_last_arg PARAMS((int, int));
 /* Not available unless __CYGWIN__ is defined. */
@@ -936,6 +951,7 @@ function rl_handle_event(event) {
     }
     if (action !== undefined) {
         action(count, event.key);
+        _rl_last_func = action;
         if (_rl_last_command_was_kill > 0) {
             _rl_last_command_was_kill--;
         }
