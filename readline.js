@@ -379,9 +379,24 @@ function rl_kill_word(count, key) {
 /* Kill from here to the end of the line.  If COUNT is negative, kill
    back to the line start instead. */
 function rl_kill_line(count, key) {
-    rl_line_buffer = rl_line_buffer.substring(0, rl_point);
+    if (count < 0) {
+        rl_backward_kill_line(-count, key);
+        return;
+    }
+
+    rl_kill_text(rl_point, rl_line_buffer.length);
 }
-//extern int rl_backward_kill_line PARAMS((int, int));
+
+/* Kill backwards to the start of the line.  If DIRECTION is negative, kill
+   forwards to the line end instead. */
+function rl_backward_kill_line(count, key) {
+    if (count < 0) {
+        rl_kill_line(-count, key);
+        return;
+    }
+
+    rl_kill_text(0, rl_point);
+}
 //extern int rl_kill_full_line PARAMS((int, int));
 
 /* This does what C-w does in Unix.  We can't prevent people from
@@ -400,8 +415,7 @@ function rl_unix_word_rubout(count, key) {
    into the line at all, and if you aren't, then you know what you are
    doing. */
 function rl_unix_line_discard(count, key) {
-    rl_line_buffer = rl_line_buffer.substring(rl_point);
-    rl_point = 0;
+    rl_kill_line(count, key);
 }
 //extern int rl_copy_region_to_kill PARAMS((int, int));
 //extern int rl_kill_region PARAMS((int, int));
