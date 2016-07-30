@@ -52,10 +52,10 @@ code.addEventListener('keydown', function(event) {
     if (!enableInput)
         return;
 
-    if (event.key == 'Escape') {
+    if (event.key == 'Control' && event.location == 2) {  // right control
         code.blur();
         update();
-        event.preventDefault();
+        event.stopPropagation();
     } else if (event.key == 'V' && event.ctrlKey) {  // Ctrl+Shift+V = pasting
     } else {
         if (rl_handle_event(event)) {
