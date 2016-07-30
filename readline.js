@@ -6,6 +6,9 @@
 * yank means paste
 * kill means cut
 * point = caret
+
+* mark is automatically set at every kill in emacs mode
+* mark is automatically set at every yank
 */
 
 
@@ -159,6 +162,7 @@ function rl_kill_text(from, to) {
     var append = from < to;
     var text = rl_line_buffer.substring(from, to);
     rl_delete_text(from, to);
+    rl_mark = rl_point;
 
     if (!_rl_last_command_was_kill) {
         _rl_kill_index = _rl_kill_ring.length;
@@ -763,6 +767,7 @@ function rl_unix_line_discard(count, key) {
 
 /* Yank back the last killed text.  This ignores arguments. */
 function rl_yank(count, key) {
+    rl_mark = rl_point;
     if (_rl_kill_ring.length >= 0) {
         rl_insert_text(_rl_kill_ring[_rl_kill_index], count);
     }
@@ -796,6 +801,7 @@ function rl_yank_nth_arg(count, key, history_skip) {
         return false;
     }
     var args = rl_args_extract(count, count, line);
+    rl_mark = rl_point;
     rl_insert_text(args);
     return true;
 }
