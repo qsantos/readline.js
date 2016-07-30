@@ -1,5 +1,13 @@
 /* Ported from readline.c, text.c and kill.c */
 
+/* Notes
+
+* rubout means delete (backspace)
+* yank means paste
+* kill means cut
+* point = caret
+*/
+
 
 /****************/
 /* Line buffer. */
