@@ -29,6 +29,10 @@ var rl_arg_sign = 1;
 var latestCut = '';
 var secondLatestCut = '';
 
+function whitespace(c) {
+    return c == ' ' || c == '\t';
+}
+
 function rl_kill_text(from, to) {
     rl_line_buffer = rl_line_buffer.substring(0, from) + rl_line_buffer.substring(to);
     if (rl_point > to) {
@@ -253,7 +257,19 @@ function rl_rubout_or_delete(count, key) {
         rl_delete(count, key);
     }
 }
-//extern int rl_delete_horizontal_space PARAMS((int, int));
+
+/* Delete all spaces and tabs around point. */
+function rl_delete_horizontal_space(count, key) {
+    var start = rl_point;
+    while (start > 0 && whitespace(rl_line_buffer[start-1])) {
+        start--;
+    }
+    var stop = rl_point;
+    while (stop < rl_line_buffer.length && whitespace(rl_line_buffer[stop])) {
+        stop++;
+    }
+    rl_kill_text(start, stop);
+}
 //extern int rl_delete_or_show_completions PARAMS((int, int));
 //extern int rl_insert_comment PARAMS((int, int));
 

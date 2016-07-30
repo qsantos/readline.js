@@ -70,7 +70,7 @@ function handle_meta_key(key) {
         //'=': rl_possible_completions,
         //'>': rl_end_of_history,
         //'?': rl_possible_completions,
-        //'\': rl_delete_horizontal_space,
+        '\\': rl_delete_horizontal_space,
         //'_': rl_yank_last_arg,
         'b': rl_backward_word,
         'c': rl_capitalize_word,
