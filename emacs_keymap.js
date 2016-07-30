@@ -44,7 +44,7 @@ function handle_ctrl_key(key) {
         'v': rl_quoted_insert,
         'w': rl_unix_word_rubout,
         'y': rl_yank,
-        //']': rl_char_search,
+        ']': rl_char_search,
         '_': rl_undo_command,
         'backspace': rl_unix_word_rubout,  // non-standard
     }[key];
@@ -105,6 +105,6 @@ function handle_meta_ctrl_key(key) {
         'r': rl_revert_line,
         //'y': rl_yank_nth_arg,
         //'[': rl_complete,
-        //']': rl_backward_char_search,
+        ']': rl_backward_char_search,
     }[key];
 }

@@ -85,6 +85,17 @@ function rl_history_seek(index) {
 }
 
 
+/***************/
+/* Other utils */
+/***************/
+
+var _rl_reading_key = false;
+var _rrl_eading_key_callback;
+
+function rl_read_key(callback) {
+    _rl_reading_key = true;
+    _rl_reading_key_callback = callback;
+}
 
 var latestCut = '';
 var secondLatestCut = '';
@@ -469,8 +480,39 @@ function rl_transpose_chars(count, key) {
 /* Bindable commands for searching within a line. */
 /**************************************************/
 
-//extern int rl_char_search PARAMS((int, int));
-//extern int rl_backward_char_search PARAMS((int, int));
+/* Search forward for a character read from the current input stream. */
+function rl_char_search(count, key) {
+    if (count < 0) {
+        rl_backward_char_search(-count, key);
+        return;
+    }
+
+    rl_read_key(function(key) {
+        while (rl_point < rl_line_buffer.length) {
+            rl_point++;
+            if (rl_line_buffer[rl_point] == key) {
+                break;
+            }
+        }
+    });
+}
+
+/* Search backward for a character read from the current input stream. */
+function rl_backward_char_search(count, key) {
+    if (count < 0) {
+        rl_backward_char_search(-count, key);
+        return;
+    }
+
+    rl_read_key(function(key) {
+        while (rl_point > 0) {
+            rl_point--;
+            if (rl_line_buffer[rl_point] == key) {
+                break;
+            }
+        }
+    });
+}
 
 /* Go to the match of the next parenthesis. (non-standard) */
 function rl_maching_paren(count, key) {
@@ -802,6 +844,12 @@ function rl_handle_event(event) {
         force_next_meta = false;
     } else if (event.key == 'Escape') {
         force_next_meta = true;
+    }
+
+    if (_rl_reading_key) {
+        _rl_reading_key = false;
+        _rl_reading_key_callback(event.key);
+        return true;
     }
 
     var count = rl_numeric_arg * rl_arg_sign;
