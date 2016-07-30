@@ -178,19 +178,28 @@ function rl_newline(count, key) {
 
 /* Rubout the character behind point. */
 function rl_rubout(count, key) {
-    if (rl_point > 0) {
-        var before = rl_line_buffer.substring(0, rl_point - 1);
-        var after = rl_line_buffer.substring(rl_point);
-        rl_line_buffer = before + after;
-        rl_point -= 1;
+    if (count < 0) {
+        rl_delete(-count, key);
+        return;
     }
+
+    count = Math.min(count, rl_point);
+    var before = rl_line_buffer.substring(0, rl_point - count);
+    var after = rl_line_buffer.substring(rl_point);
+    rl_line_buffer = before + after;
+    rl_point -= count;
 }
 
 /* Delete the character under the cursor.  Given a numeric argument,
    kill that many characters instead. */
 function rl_delete(count, key) {
+    if (count < 0) {
+        rl_rubout(-count, key);
+        return;
+    }
+
     var before = rl_line_buffer.substring(0, rl_point);
-    var after = rl_line_buffer.substring(rl_point+1);
+    var after = rl_line_buffer.substring(rl_point+count);
     rl_line_buffer = before + after;
 }
 
