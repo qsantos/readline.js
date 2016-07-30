@@ -92,7 +92,7 @@ function handle_meta_ctrl_key(key) {
     return {
         //'g': rl_abort,
         'h': rl_backward_kill_word,
-        //'i': rl_tab_insert,
+        'i': rl_tab_insert,
         //'j': rl_vi_editing_mode,
         //'m': rl_vi_editing_mode,
         'r': rl_revert_line,

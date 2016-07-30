@@ -200,7 +200,11 @@ function rl_insert(count, key) {
 function rl_quoted_insert(count, key) {
     rl_insert_next = true;
 }
-//extern int rl_tab_insert PARAMS((int, int));
+
+/* Insert a tab character. */
+function rl_tab_insert(count, key) {
+    rl_insert(count, '\t');
+}
 
 /* What to do when a NEWLINE is pressed.  We accept the whole line. */
 function rl_newline(count, key) {
