@@ -292,17 +292,20 @@ function rl_transpose_chars(count, key) {
         return;
     }
 
+    if (count < 0) {
+        // apparently not supported by readline
+        return;
+    }
+
     if (rl_point == 0) {
         return;
     }
 
-    rl_forward_char();
-
-    var char_1 = rl_line_buffer[rl_point-1];
-    var char_2 = rl_line_buffer[rl_point-2];
-    rl_rubout();
-    rl_rubout();
-    rl_insert_text(char_1 + char_2);
+    // transpose = moving the character to the right
+    var c = rl_line_buffer[rl_point-1];
+    rl_rubout(1, 0);
+    rl_forward_char(count, 0);
+    rl_insert(1, c);
 }
 
 /**************************************************/
