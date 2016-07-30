@@ -406,7 +406,11 @@ function rl_backward_kill_line(count, key) {
 
     rl_kill_text(0, rl_point);
 }
-//extern int rl_kill_full_line PARAMS((int, int));
+
+/* Kill the whole line, no matter where point is. */
+function rl_kill_full_line(count, key) {
+    rl_kill_text(0, rl_line_buffer.length);
+}
 
 /* This does what C-w does in Unix.  We can't prevent people from
    using behaviour that they expect. */
