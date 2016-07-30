@@ -70,3 +70,10 @@ function find_matching_paren(string, i) {
 
     return -1;
 }
+
+
+/********************************************************************/
+/* Bindable command used when inserting a matching close character. */
+/********************************************************************/
+
+//extern int rl_insert_close PARAMS((int, int));
