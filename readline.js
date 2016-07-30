@@ -79,6 +79,42 @@ function rl_history_seek(index) {
 }
 
 
+/**********************/
+/* Text killing utils */
+/**********************/
+
+/* Where to store killed text. */
+var _rl_kill_ring = [""];
+
+/* Where we are in the kill ring. */
+var _rl_kill_index = 0;
+
+/* Non-zero if the previous command was a kill command. */
+var _rl_last_command_was_kill = 0;
+
+/* Add TEXT to the kill ring.  If the last command was a kill, the text is
+   appended or prepended to the current slot, depending on whether FROM is
+   lesser or greater than TO. */
+function rl_kill_text(from, to) {
+    var append = from < to;
+    var text = rl_line_buffer.substring(from, to);
+    rl_delete_text(from, to);
+
+    if (!_rl_last_command_was_kill) {
+        _rl_kill_index = _rl_kill_ring.length;
+        _rl_kill_ring.push(text);
+    } else if (append) {
+        _rl_kill_index = _rl_kill_ring.length-1;
+        _rl_kill_ring[_rl_kill_index] = _rl_kill_ring[_rl_kill_index] + text;
+    } else {
+        _rl_kill_index = _rl_kill_ring.length-1;
+        _rl_kill_ring[_rl_kill_index] = text + _rl_kill_ring[_rl_kill_index];
+    }
+
+    _rl_last_command_was_kill = 2;  // decremented once right afterward
+}
+
+
 /***************/
 /* Other utils */
 /***************/
@@ -92,9 +128,6 @@ function rl_read_key(callback) {
 }
 
 var _rl_overwrite = false;
-
-var _rl_latest_cut = '';
-var _rl_second_latest_cut = '';
 
 function _rl_whitespace(c) {
     return c == ' ' || c == '\t';
@@ -119,11 +152,6 @@ function rl_delete_text(from, to) {
     }
 }
 
-function rl_kill_text(from, to) {
-    rl_delete_text(from, to);
-    _rl_second_latest_cut = _rl_latest_cut;
-    _rl_latest_cut = rl_line_buffer.substring(from, to);
-}
 
 /* Insert a string of text into the line at point.  This is the only
    way that you should do insertion. */
@@ -661,7 +689,9 @@ function rl_unix_line_discard(count, key) {
 
 /* Yank back the last killed text.  This ignores arguments. */
 function rl_yank(count, key) {
-    rl_insert_text(_rl_latest_cut, count);
+    if (_rl_kill_ring.length >= 0) {
+        rl_insert_text(_rl_kill_ring[_rl_kill_index], count);
+    }
 }
 
 /* If the last command was yank, or yank_pop, and the text just
@@ -906,6 +936,9 @@ function rl_handle_event(event) {
     }
     if (action !== undefined) {
         action(count, event.key);
+        if (_rl_last_command_was_kill > 0) {
+            _rl_last_command_was_kill--;
+        }
         if (action !== rl_digit_argument) {
             rl_discard_argument();
         }

@@ -88,7 +88,7 @@ function handle_meta_key(key) {
         'r': rl_revert_line,
         //'t': rl_transpose_words,
         'u': rl_upcase_word,
-        'y': rl_yank_pop,
+        //'y': rl_yank_pop,
         //'~': rl_tilde_expand,
         'backspace': rl_backward_kill_word,
     }[key];
