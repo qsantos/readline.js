@@ -228,11 +228,8 @@ function rl_rubout(count, key) {
         return;
     }
 
-    count = Math.min(count, rl_point);
-    var before = rl_line_buffer.substring(0, rl_point - count);
-    var after = rl_line_buffer.substring(rl_point);
-    rl_line_buffer = before + after;
-    rl_point -= count;
+    count = Math.min(rl_point, count);
+    rl_delete_text(rl_point - count, rl_point);
 }
 
 /* Delete the character under the cursor.  Given a numeric argument,
@@ -243,9 +240,7 @@ function rl_delete(count, key) {
         return;
     }
 
-    var before = rl_line_buffer.substring(0, rl_point);
-    var after = rl_line_buffer.substring(rl_point+count);
-    rl_line_buffer = before + after;
+    rl_delete_text(rl_point, rl_point + count);
 }
 
 /* Delete the character under the cursor, unless the insertion
