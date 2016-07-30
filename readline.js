@@ -776,8 +776,22 @@ function rl_kill_region(count, key) {
     // different from rl_kill_text: rl_mark is not updated
 }
 
-//extern int rl_copy_forward_word PARAMS((int, int));
-//extern int rl_copy_backward_word PARAMS((int, int));
+/* Copy COUNT words forward to the kill ring. */
+function rl_copy_forward_word (count, key) {
+    var orig = rl_point;
+
+    rl_forward_word(count, 0);
+    var stop = rl_point;
+    rl_backward_word(count, 0);
+    _rl_copy_to_kill_ring(rl_point, stop);
+
+    rl_point = orig;
+}
+
+/* Copy COUNT words backward to the kill ring. */
+function rl_copy_backward_word (count, key) {
+    rl_copy_forward_word(-count, key);
+}
 
 /* Yank back the last killed text.  This ignores arguments. */
 function rl_yank(count, key) {
