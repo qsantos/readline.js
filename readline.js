@@ -155,27 +155,30 @@ var _rl_kill_index = 0;
 /* Non-zero if the previous command was a kill command. */
 var _rl_last_command_was_kill = 0;
 
-/* Add TEXT to the kill ring.  If the last command was a kill, the text is
-   appended or prepended to the current slot, depending on whether FROM is
-   lesser or greater than TO. */
-function rl_kill_text(from, to) {
-    var append = from < to;
+/* Add part of line between FROM and TO to the kill ring.  If the last command
+   was a kill, the text is appended or prepended to the current slot, depending
+   on whether FROM is lesser or greater than TO. */
+function _rl_copy_to_kill_ring(from, to) {
+    _rl_last_command_was_kill = 2;  // decremented once right afterward
+
     var text = rl_line_buffer.substring(from, to);
-    rl_delete_text(from, to);
-    rl_mark = rl_point;
 
     if (!_rl_last_command_was_kill) {
         _rl_kill_index = _rl_kill_ring.length;
         _rl_kill_ring.push(text);
-    } else if (append) {
+    } else if (from < to) {
         _rl_kill_index = _rl_kill_ring.length-1;
         _rl_kill_ring[_rl_kill_index] = _rl_kill_ring[_rl_kill_index] + text;
     } else {
         _rl_kill_index = _rl_kill_ring.length-1;
         _rl_kill_ring[_rl_kill_index] = text + _rl_kill_ring[_rl_kill_index];
     }
+}
 
-    _rl_last_command_was_kill = 2;  // decremented once right afterward
+function rl_kill_text(from, to) {
+    _rl_copy_to_kill_ring(from, to);
+    rl_delete_text(from, to);
+    rl_mark = rl_point;
 }
 
 
@@ -760,8 +763,19 @@ function rl_unix_word_rubout(count, key) {
 function rl_unix_line_discard(count, key) {
     rl_kill_line(count, key);
 }
-//extern int rl_copy_region_to_kill PARAMS((int, int));
-//extern int rl_kill_region PARAMS((int, int));
+
+/* Copy the text in the region to the kill ring. */
+function rl_copy_region_to_kill(count, key) {
+    _rl_copy_to_kill_ring(rl_point, rl_mark);
+}
+
+/* Kill the text between the point and mark. */
+function rl_kill_region(count, key) {
+    _rl_copy_to_kill_ring(rl_point, rl_mark);
+    rl_delete_text(rl_point, rl_mark);
+    // different from rl_kill_text: rl_mark is not updated
+}
+
 //extern int rl_copy_forward_word PARAMS((int, int));
 //extern int rl_copy_backward_word PARAMS((int, int));
 
