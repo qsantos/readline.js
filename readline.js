@@ -35,8 +35,17 @@ function whitespace(c) {
     return c == ' ' || c == '\t';
 }
 
-function rl_kill_text(from, to) {
+/* Delete the string between FROM and TO.  FROM is inclusive, TO is not.
+   Returns the number of characters deleted. */
+function rl_delete_text(from, to) {
+    if (from > to) {
+        rl_delete_text(to, from);
+        return;
+    }
+
     rl_line_buffer = rl_line_buffer.substring(0, from) + rl_line_buffer.substring(to);
+
+    // move point
     if (rl_point > to) {
         rl_point -= to - from;
     } else if (rl_point > from) {
@@ -44,17 +53,10 @@ function rl_kill_text(from, to) {
     }
 }
 
-/* Delete the string between FROM and TO.  FROM is inclusive, TO is not.
-   Returns the number of characters deleted. */
-function rl_delete_text(start, stop) {
-    if (stop < start) {
-        rl_delete_text(stop, start);
-        return;
-    }
-
+function rl_kill_text(from, to) {
+    rl_delete_text(from, to);
     secondLatestCut = latestCut;
-    latestCut = rl_line_buffer.substring(start, stop);
-    rl_kill_text(start, stop);
+    latestCut = rl_line_buffer.substring(from, to);
 }
 
 /* Insert a string of text into the line at point.  This is the only
@@ -229,7 +231,11 @@ function rl_rubout(count, key) {
     }
 
     count = Math.min(rl_point, count);
-    rl_delete_text(rl_point - count, rl_point);
+    if (rl_explicit_arg) {
+        rl_kill_text(rl_point, rl_point - count);
+    } else {
+        rl_delete_text(rl_point, rl_point - count);
+    }
 }
 
 /* Delete the character under the cursor.  Given a numeric argument,
@@ -240,7 +246,11 @@ function rl_delete(count, key) {
         return;
     }
 
-    rl_delete_text(rl_point, rl_point + count);
+    if (rl_explicit_arg) {
+        rl_kill_text(rl_point, rl_point + count);
+    } else {
+        rl_delete_text(rl_point, rl_point + count);
+    }
 }
 
 /* Delete the character under the cursor, unless the insertion
@@ -265,7 +275,7 @@ function rl_delete_horizontal_space(count, key) {
     while (stop < rl_line_buffer.length && whitespace(rl_line_buffer[stop])) {
         stop++;
     }
-    rl_kill_text(start, stop);
+    rl_delete_text(start, stop);
 }
 //extern int rl_delete_or_show_completions PARAMS((int, int));
 
@@ -276,7 +286,7 @@ function rl_insert_comment(count, key) {
 
     var check_start = rl_explicit_arg || rl_arg_sign == -1;
     if (check_start && rl_line_buffer.startsWith(rl_comment_begin)) {
-        rl_kill_text(rl_point, rl_comment_begin.length);
+        rl_delete_text(rl_point, rl_comment_begin.length);
     } else {
         rl_insert_text(rl_comment_begin);
     }
@@ -288,7 +298,7 @@ function rl_insert_comment(count, key) {
 function rl_quote(count, key) {
     var quoted = rl_line_buffer.substring(0, rl_point);
     quoted = quoted.replace(/'/g, "'\\''");
-    rl_kill_text(0, rl_point);
+    rl_delete_text(0, rl_point);
     rl_beg_of_line(0, 1);
     rl_insert_text("'" + quoted + "'");
 }
@@ -337,7 +347,7 @@ function rl_change_case(count, op) {
     }
 
     var extract = rl_line_buffer.substring(start, stop);
-    rl_kill_text(start, stop);
+    rl_delete_text(start, stop);
     rl_insert_text(op(extract));
 }
 
@@ -442,7 +452,7 @@ function rl_maching_paren(count, key) {
 function rl_kill_word(count, key) {
     var start = rl_point;
     rl_forward_word(count, key);
-    rl_delete_text(start, rl_point);
+    rl_kill_text(start, rl_point);
 }
 
 /* Rubout the word before point, placing it on the kill ring. */
@@ -469,7 +479,7 @@ function rl_backward_kill_line(count, key) {
         return;
     }
 
-    rl_kill_text(0, rl_point);
+    rl_kill_text(rl_point, 0);
 }
 
 /* Kill the whole line, no matter where point is. */
@@ -482,7 +492,7 @@ function rl_kill_full_line(count, key) {
 function rl_unix_word_rubout(count, key) {
     var stop = rl_point;
     rl_backward_word(count, 0);
-    rl_delete_text(rl_point, stop);
+    rl_kill_text(stop, rl_point);
 }
 //extern int rl_unix_filename_rubout PARAMS((int, int));
 
