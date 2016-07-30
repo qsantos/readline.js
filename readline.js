@@ -242,7 +242,17 @@ function rl_delete(count, key) {
     rl_line_buffer = before + after;
 }
 
-//extern int rl_rubout_or_delete PARAMS((int, int));
+/* Delete the character under the cursor, unless the insertion
+   point is at the end of the line, in which case the character
+   behind the cursor is deleted.  COUNT is obeyed and may be used
+   to delete forward or backward that many characters. */
+function rl_rubout_or_delete(count, key) {
+    if (rl_point == rl_line_buffer.length) {
+        rl_rubout(count, key);
+    } else {
+        rl_delete(count, key);
+    }
+}
 //extern int rl_delete_horizontal_space PARAMS((int, int));
 //extern int rl_delete_or_show_completions PARAMS((int, int));
 //extern int rl_insert_comment PARAMS((int, int));
