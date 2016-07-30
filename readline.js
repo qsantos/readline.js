@@ -28,6 +28,34 @@ var rl_arg_sign = 1;
 /* The string marking the beginning of a comment. */
 var rl_comment_begin = '#';
 
+/**************/
+/* Undo utils */
+/**************/
+
+var rl_undo_list = []
+var rl_undo_group_depth = 0;
+
+/* Remember how to undo something.  Concatenate some undos if that
+   seems right. */
+function rl_add_undo() {
+    if (rl_undo_group_depth == 0) {
+        rl_undo_list.push([rl_line_buffer, rl_point]);
+    }
+}
+
+/* Begin a group.  Subsequent undos are undone as an atomic operation. */
+function rl_begin_undo_group() {
+    rl_add_undo();
+    rl_undo_group_depth++;
+}
+
+/* End an undo group started with rl_begin_undo_group (). */
+function rl_end_undo_group() {
+    rl_undo_group_depth--;
+}
+
+
+
 var latestCut = '';
 var secondLatestCut = '';
 
@@ -43,6 +71,7 @@ function rl_delete_text(from, to) {
         return;
     }
 
+    rl_add_undo();
     rl_line_buffer = rl_line_buffer.substring(0, from) + rl_line_buffer.substring(to);
 
     // move point
@@ -62,6 +91,7 @@ function rl_kill_text(from, to) {
 /* Insert a string of text into the line at point.  This is the only
    way that you should do insertion. */
 function rl_insert_text(text, count) {
+    rl_add_undo();
     count = count === undefined ? 1 : count;
 
     var before = rl_line_buffer.substring(0, rl_point);
@@ -219,6 +249,7 @@ function rl_newline(count, key) {
     rl_linefunc(rl_line_buffer);
     rl_line_buffer = '';
     rl_point = 0;
+    rl_undo_list = [];
 }
 
 //extern int rl_do_lowercase_version PARAMS((int, int));
@@ -296,18 +327,26 @@ function rl_insert_comment(count, key) {
 
 /* Put the beginning of the line between single quotes. */
 function rl_quote(count, key) {
+    rl_begin_undo_group();
+
     var quoted = rl_line_buffer.substring(0, rl_point);
     quoted = quoted.replace(/'/g, "'\\''");
     rl_delete_text(0, rl_point);
     rl_beg_of_line(0, 1);
     rl_insert_text("'" + quoted + "'");
+
+    rl_end_undo_group();
 }
 
 /* Put the full line between single quotes. */
 function rl_quote_full(count, key) {
+    rl_begin_undo_group();
+
     var quoted = rl_line_buffer.quoted.replace(/'/g, "\\'");
     rl_delete_text(0, rl_line_buffer.length);
     rl_insert_text("'" + quoted + "'");
+
+    rl_end_undo_group();
 }
 
 /****************************************/
@@ -335,6 +374,8 @@ function rl_capitalize_word(count, key) {
 }
 
 function rl_change_case(count, op) {
+    rl_begin_undo_group();
+
     var start = rl_point;
     rl_forward_word(count, 0);
     var stop = rl_point;
@@ -349,6 +390,8 @@ function rl_change_case(count, op) {
     var extract = rl_line_buffer.substring(start, stop);
     rl_delete_text(start, stop);
     rl_insert_text(op(extract));
+
+    rl_end_undo_group();
 }
 
 /***********************************************************/
@@ -373,11 +416,15 @@ function rl_transpose_chars(count, key) {
         return;
     }
 
+    rl_begin_undo_group();
+
     // transpose = moving the character to the right
     var c = rl_line_buffer[rl_point-1];
     rl_rubout(1, 0);
     rl_forward_char(count, 0);
     rl_insert(1, c);
+
+    rl_end_undo_group();
 }
 
 /**************************************************/
@@ -549,10 +596,26 @@ function rl_yank_pop(count, key) {
 
 /* Revert the current line to its previous state. */
 function rl_revert_line(count, key) {
-    rl_line_buffer = '';
-    rl_point = 0;
+    rl_line_buffer = rl_undo_list[0];
+    rl_undo_list = [];
 }
-//extern int rl_undo_command PARAMS((int, int));
+
+/* Do some undoing of things that were done. */
+function rl_undo_command(count, key) {
+    if (count < 0) {
+        return;
+    }
+
+    var undo;
+    for (var _ = 0; _ < count; _++) {
+        if (rl_undo_list.length == 0) {
+            return;
+        }
+        undo = rl_undo_list.pop();
+    }
+    rl_line_buffer = undo[0];
+    rl_point = undo[1];
+}
 
 /**************************************/
 /* Bindable tilde expansion commands. */

@@ -43,7 +43,7 @@ function handle_ctrl_key(key) {
         'w': rl_unix_word_rubout,
         'y': rl_yank,
         //']': rl_char_search,
-        //'_': rl_undo_command,
+        '_': rl_undo_command,
         'backspace': rl_unix_word_rubout,  // non-standard
     }[key];
 }
