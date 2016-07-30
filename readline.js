@@ -15,6 +15,9 @@ var rl_line_buffer = ''
 /* The current offset in the current input line. */
 var rl_point = 0;
 
+/* The mark, or saved cursor position. */
+var rl_mark = 0;
+
 /* Insert the next typed character verbatim. */
 var _rl_insert_next = false;
 
@@ -382,6 +385,7 @@ function rl_newline(count, key) {
     rl_linefunc(rl_line_buffer);
     rl_line_buffer = '';
     rl_point = 0;
+    rl_mark = 0;
     _rl_undo_list = [];
 }
 
@@ -634,8 +638,21 @@ function rl_get_previous_history(count, key) {
 /* Bindable commands for managing the mark and region. */
 /*******************************************************/
 
-//extern int rl_set_mark PARAMS((int, int));
-//extern int rl_exchange_point_and_mark PARAMS((int, int));
+/* A bindable command to set the mark. */
+function rl_set_mark(count, key) {
+    if (rl_explicit_arg) {
+        rl_mark = count;
+    } else {
+        rl_mark = rl_point;
+    }
+}
+
+/* Exchange the position of mark and point. */
+function rl_exchange_point_and_mark(count, key) {
+    var tmp = rl_mark;
+    rl_mark = rl_point;
+    rl_point = tmp;
+}
 
 /************************************************************/
 /* Bindable commands to set the editing mode (emacs or vi). */

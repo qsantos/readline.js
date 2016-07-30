@@ -22,7 +22,7 @@ function handle_standard_key(key) {
 
 function handle_ctrl_key(key) {
     return {
-        //'@': rl_set_mark,
+        '@': rl_set_mark,
         'a': rl_beg_of_line,
         'b': rl_backward_char,
         'd': rl_delete,
@@ -53,7 +53,7 @@ function handle_ctrl_key(key) {
 
 function handle_meta_key(key) {
     return {
-        //' ': rl_set_mark,
+        ' ': rl_set_mark,
         '"': rl_quote,  // non-standard (from zsh)
         '#': rl_insert_comment,
         '%': rl_maching_paren,  // non-standard
