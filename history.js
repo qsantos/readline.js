@@ -5,20 +5,29 @@
 /*****************/
 
 /* An array of strings.  This is where we store the history. */
-var rl_history = [""];
+var rl_history = [];
 
 /* The current location of the interactive history pointer. */
 var rl_history_index = 0;
 
+/* Add a line to the history. */
+function rl_history_append() {
+    if (rl_line_buffer !== "") {
+        rl_history.push(rl_line_buffer);
+    }
+    rl_history_index = rl_history.length;
+}
+
 /* Seek a line of history by index. */
 function rl_history_seek(index) {
     if (index < 0) {
-        index = 0;
     } else if (index >= rl_history.length) {
-        index = rl_history.length;
+        rl_history_index = rl_history.length;
+        rl_line_buffer = "";
+    } else {
+        rl_history_index = index;
+        rl_line_buffer = rl_history[rl_history_index];
     }
-    rl_history_index = index;
-    rl_line_buffer = rl_history[rl_history_index];
     rl_end_of_line();
 }
 

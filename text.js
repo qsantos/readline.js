@@ -159,14 +159,7 @@ function rl_tab_insert(count, key) {
 
 /* What to do when a NEWLINE is pressed.  We accept the whole line. */
 function rl_newline(count, key) {
-    // history
-    rl_history_index = rl_history.length-1;
-    if (rl_line_buffer !== "") {
-        rl_history[rl_history_index] = rl_line_buffer;
-        rl_history_index += 1;
-        rl_history.push("");
-    }
-
+    rl_history_append();
     rl_linefunc(rl_line_buffer);
     rl_line_buffer = '';
     rl_point = 0;
