@@ -5,10 +5,15 @@
 /*****************/
 
 /* An array of strings.  This is where we store the history. */
-var rl_history = [];
+var rl_history = localStorage.getItem('~/.history');
+if (rl_history) {
+    rl_history = JSON.parse(rl_history);
+} else {
+    rl_history = [];
+}
 
 /* The current location of the interactive history pointer. */
-var rl_history_index = 0;
+var rl_history_index = rl_history.length;
 
 /* Add a line to the history. */
 function rl_history_append() {
@@ -16,6 +21,8 @@ function rl_history_append() {
         rl_history.push(rl_line_buffer);
     }
     rl_history_index = rl_history.length;
+
+    localStorage.setItem('~/.history', JSON.stringify(rl_history));
 }
 
 /* Seek a line of history by index. */
