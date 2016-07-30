@@ -1,9 +1,16 @@
 /* Ported from readline.c, text.c and kill.c */
 
+
+/****************/
 /* Line buffer. */
+/****************/
+
 var rl_line_buffer = ''
 
+/*************************************************/
 /* The current offset in the current input line. */
+/*************************************************/
+
 var rl_point = 0;
 
 var latestCut = '';
@@ -45,11 +52,17 @@ function rl_insert_text(text) {
 }
 
 
+/********************************************/
 /* Bindable commands for numeric arguments. */
+/********************************************/
+
 //extern int rl_digit_argument PARAMS((int, int));
 //extern int rl_universal_argument PARAMS((int, int));
 
+/********************************************/
 /* Bindable commands for moving the cursor. */
+/********************************************/
+
 function rl_forward_char(count, key) {
     rl_point += 1;
     if (rl_point > rl_line_buffer.length) {
@@ -79,7 +92,10 @@ function rl_backward_word(count, key) {
 //extern int rl_skip_csi_sequence PARAMS((int, int));
 //extern int rl_arrow_keys PARAMS((int, int));
 
+/******************************************************/
 /* Bindable commands for inserting and deleting text. */
+/******************************************************/
+
 function rl_insert(count, key) {
     rl_insert_text(key);
 }
@@ -109,7 +125,10 @@ function rl_delete(count, key) {
 //extern int rl_delete_or_show_completions PARAMS((int, int));
 //extern int rl_insert_comment PARAMS((int, int));
 
+/****************************************/
 /* Bindable commands for changing case. */
+/****************************************/
+
 //extern int rl_upcase_word PARAMS((int, int));
 //extern int rl_downcase_word PARAMS((int, int));
 function rl_capitalize_word(count, key) {
@@ -120,38 +139,62 @@ function rl_capitalize_word(count, key) {
     rl_point = nextWordStop();
 }
 
+/***********************************************************/
 /* Bindable commands for transposing characters and words. */
+/***********************************************************/
+
 //extern int rl_transpose_words PARAMS((int, int));
 //extern int rl_transpose_chars PARAMS((int, int));
 
+/**************************************************/
 /* Bindable commands for searching within a line. */
+/**************************************************/
+
 //extern int rl_char_search PARAMS((int, int));
 //extern int rl_backward_char_search PARAMS((int, int));
 
+/**********************************************************************/
 /* Bindable commands for readline's interface to the command history. */
+/**********************************************************************/
+
 //extern int rl_beginning_of_history PARAMS((int, int));
 //extern int rl_end_of_history PARAMS((int, int));
 //extern int rl_get_next_history PARAMS((int, int));
 //extern int rl_get_previous_history PARAMS((int, int));
 
+/*******************************************************/
 /* Bindable commands for managing the mark and region. */
+/*******************************************************/
+
 //extern int rl_set_mark PARAMS((int, int));
 //extern int rl_exchange_point_and_mark PARAMS((int, int));
 
+/************************************************************/
 /* Bindable commands to set the editing mode (emacs or vi). */
+/************************************************************/
+
 //extern int rl_vi_editing_mode PARAMS((int, int));
 //extern int rl_emacs_editing_mode PARAMS((int, int));
 
+/*********************************************************************/
 /* Bindable commands to change the insert mode (insert or overwrite) */
+/*********************************************************************/
+
 //extern int rl_overwrite_mode PARAMS((int, int));
 
+/************************************************/
 /* Bindable commands for managing key bindings. */
+/************************************************/
+
 //extern int rl_re_read_init_file PARAMS((int, int));
 //extern int rl_dump_functions PARAMS((int, int));
 //extern int rl_dump_macros PARAMS((int, int));
 //extern int rl_dump_variables PARAMS((int, int));
 
+/******************************************/
 /* Bindable commands for word completion. */
+/******************************************/
+
 //extern int rl_complete PARAMS((int, int));
 //extern int rl_possible_completions PARAMS((int, int));
 //extern int rl_insert_completions PARAMS((int, int));
@@ -159,7 +202,10 @@ function rl_capitalize_word(count, key) {
 //extern int rl_menu_complete PARAMS((int, int));
 //extern int rl_backward_menu_complete PARAMS((int, int));
 
+/*******************************************************************************/
 /* Bindable commands for killing and yanking text, and managing the kill ring. */
+/*******************************************************************************/
+
 function rl_kill_word(count, key) {
     var next = nextWordStop();
     rl_delete_text(rl_point, next);
@@ -195,35 +241,56 @@ function rl_yank_pop(count, key) {
 /* Not available unless __CYGWIN__ is defined. */
 //extern int rl_paste_from_clipboard PARAMS((int, int));
 
+/************************************************/
 /* Bindable commands for incremental searching. */
+/************************************************/
+
 //extern int rl_reverse_search_history PARAMS((int, int));
 //extern int rl_forward_search_history PARAMS((int, int));
 
+/*************************************/
 /* Bindable keyboard macro commands. */
+/*************************************/
+
 //extern int rl_start_kbd_macro PARAMS((int, int));
 //extern int rl_end_kbd_macro PARAMS((int, int));
 //extern int rl_call_last_kbd_macro PARAMS((int, int));
 //extern int rl_print_last_kbd_macro PARAMS((int, int));
 
+/***************************/
 /* Bindable undo commands. */
+/***************************/
+
 function rl_revert_line(count, key) {
     rl_line_buffer = '';
     rl_point = 0;
 }
 //extern int rl_undo_command PARAMS((int, int));
 
+/**************************************/
 /* Bindable tilde expansion commands. */
+/**************************************/
+
 //extern int rl_tilde_expand PARAMS((int, int));
 
+/***************************************/
 /* Bindable terminal control commands. */
+/***************************************/
+
 //extern int rl_restart_output PARAMS((int, int));
 //extern int rl_stop_output PARAMS((int, int));
 
+/************************************/
 /* Miscellaneous bindable commands. */
+/************************************/
+
 //extern int rl_abort PARAMS((int, int));
 //extern int rl_tty_status PARAMS((int, int));
 
+/****************************************************************************/
 /* Bindable commands for incremental and non-incremental history searching. */
+/****************************************************************************/
+
 //extern int rl_history_search_forward PARAMS((int, int));
 //extern int rl_history_search_backward PARAMS((int, int));
 //extern int rl_history_substr_search_forward PARAMS((int, int));
@@ -233,16 +300,28 @@ function rl_revert_line(count, key) {
 //extern int rl_noninc_forward_search_again PARAMS((int, int));
 //extern int rl_noninc_reverse_search_again PARAMS((int, int));
 
+/********************************************************************/
 /* Bindable command used when inserting a matching close character. */
+/********************************************************************/
+
 //extern int rl_insert_close PARAMS((int, int));
 
+/*******************************************************/
 /* Not available unless READLINE_CALLBACKS is defined. */
+/*******************************************************/
+
 //extern void rl_callback_handler_install PARAMS((const char *, rl_vcpfunc_t *));
 //extern void rl_callback_read_char PARAMS((void));
 //extern void rl_callback_handler_remove PARAMS((void));
 
+/****************************************************************************/
 /* Things for vi mode. Not available unless readline is compiled -DVI_MODE. */
+/****************************************************************************/
+
+/******************************/
 /* VI-mode bindable commands. */
+/******************************/
+
 //extern int rl_vi_redo PARAMS((int, int));
 //extern int rl_vi_undo PARAMS((int, int));
 //extern int rl_vi_yank_arg PARAMS((int, int));
@@ -282,14 +361,20 @@ function rl_revert_line(count, key) {
 //extern int rl_vi_set_mark PARAMS((int, int));
 //extern int rl_vi_goto_mark PARAMS((int, int));
 
+/******************************/
 /* VI-mode utility functions. */
+/******************************/
+
 //extern int rl_vi_check PARAMS((void));
 //extern int rl_vi_domove PARAMS((int, int *));
 //extern int rl_vi_bracktype PARAMS((int));
 
 //extern void rl_vi_start_inserting PARAMS((int, int, int));
 
+/****************************************************************/
 /* VI-mode pseudo-bindable commands, used as utility functions. */
+/****************************************************************/
+
 //extern int rl_vi_fWord PARAMS((int, int));
 //extern int rl_vi_bWord PARAMS((int, int));
 //extern int rl_vi_eWord PARAMS((int, int));
