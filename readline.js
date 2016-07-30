@@ -306,8 +306,8 @@ function rl_quote(count, key) {
 /* Put the full line between single quotes. */
 function rl_quote_full(count, key) {
     var quoted = rl_line_buffer.quoted.replace(/'/g, "\\'");
-    rl_line_buffer = "'" + quoted + "'";
-    rl_end_of_line(1, 0);
+    rl_delete_text(0, rl_line_buffer.length);
+    rl_insert_text("'" + quoted + "'");
 }
 
 /****************************************/
