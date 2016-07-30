@@ -41,6 +41,11 @@ function rl_kill_text(from, to) {
 /* Delete the string between FROM and TO.  FROM is inclusive, TO is not.
    Returns the number of characters deleted. */
 function rl_delete_text(start, stop) {
+    if (stop < start) {
+        rl_delete_text(stop, start);
+        return;
+    }
+
     secondLatestCut = latestCut;
     latestCut = rl_line_buffer.substring(start, stop);
     rl_kill_text(start, stop);
@@ -374,7 +379,11 @@ function rl_kill_word(count, key) {
     rl_forward_word(count, key);
     rl_delete_text(start, rl_point);
 }
-//extern int rl_backward_kill_word PARAMS((int, int));
+
+/* Rubout the word before point, placing it on the kill ring. */
+function rl_backward_kill_word(count, key) {
+    rl_kill_word(-count, key);
+}
 
 /* Kill from here to the end of the line.  If COUNT is negative, kill
    back to the line start instead. */

@@ -84,14 +84,14 @@ function handle_meta_key(key) {
         'u': rl_upcase_word,
         'y': rl_yank_pop,
         //'~': rl_tilde_expand,
-        //'backspace': rl_backward_kill_word,
+        'backspace': rl_backward_kill_word,
     }[key];
 }
 
 function handle_meta_ctrl_key(key) {
     return {
         //'g': rl_abort,
-        //'h': rl_backward_kill_word,
+        'h': rl_backward_kill_word,
         //'i': rl_tab_insert,
         //'j': rl_vi_editing_mode,
         //'m': rl_vi_editing_mode,
