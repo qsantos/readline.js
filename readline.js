@@ -48,11 +48,17 @@ function rl_delete_text(start, stop) {
 
 /* Insert a string of text into the line at point.  This is the only
    way that you should do insertion. */
-function rl_insert_text(text) {
+function rl_insert_text(text, count) {
+    count = count === undefined ? 1 : count;
+
     var before = rl_line_buffer.substring(0, rl_point);
     var after = rl_line_buffer.substring(rl_point);
-    rl_line_buffer = before + text + after;
-    rl_point += text.length;
+    rl_line_buffer = before;
+    for (var _ = 0; _ < count; _++) {
+        rl_line_buffer += text;
+        rl_point += text.length;
+    }
+    rl_line_buffer += after;
 }
 
 /* What to do when you abort reading an argument. */
@@ -158,7 +164,7 @@ function rl_backward_word(count, key) {
 
 /* Insert a character. */
 function rl_insert(count, key) {
-    rl_insert_text(key);
+    rl_insert_text(key, count);
 }
 
 /* Insert a raw character (e.g. ^A) */
@@ -371,7 +377,7 @@ function rl_unix_line_discard(count, key) {
 
 /* Yank back the last killed text.  This ignores arguments. */
 function rl_yank(count, key) {
-    rl_insert_text(latestCut);
+    rl_insert_text(latestCut, count);
 }
 
 /* If the last command was yank, or yank_pop, and the text just
@@ -379,7 +385,7 @@ function rl_yank(count, key) {
    delete that text from the line, rotate the index down, and
    yank back some other text. */
 function rl_yank_pop(count, key) {
-    rl_insert_text(secondLatestCut);
+    rl_insert_text(secondLatestCut, count);
 }
 //extern int rl_yank_nth_arg PARAMS((int, int));
 //extern int rl_yank_last_arg PARAMS((int, int));
