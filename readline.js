@@ -38,12 +38,16 @@ function nextWordStop() {
     return i;
 }
 
-function rl_delete_text(start, stop) {
+/* Delete the string between FROM and TO.  FROM is inclusive, TO is not.
+   Returns the number of characters deleted. */
+function rl_delete_text(from, to) {
     secondLatestCut = latestCut;
-    latestCut = rl_line_buffer.substring(start, stop);
-    rl_line_buffer = rl_line_buffer.substring(0, start) + rl_line_buffer.substring(stop);
+    latestCut = rl_line_buffer.substring(from, to);
+    rl_line_buffer = rl_line_buffer.substring(0, from) + rl_line_buffer.substring(to);
 }
 
+/* Insert a string of text into the line at point.  This is the only
+   way that you should do insertion. */
 function rl_insert_text(text) {
     var before = rl_line_buffer.substring(0, rl_point);
     var after = rl_line_buffer.substring(rl_point);
@@ -63,27 +67,38 @@ function rl_insert_text(text) {
 /* Bindable commands for moving the cursor. */
 /********************************************/
 
+/* Move forward COUNT characters. */
 function rl_forward_char(count, key) {
     rl_point += 1;
     if (rl_point > rl_line_buffer.length) {
         rl_point = rl_line_buffer.length;
     }
 }
+
+/* Move backward COUNT characters. */
 function rl_backward_char(count, key) {
     rl_point -= 1;
     if (rl_point < 0) {
         rl_point = 0;
     }
 }
+
+/* Move to the beginning of the line. */
 function rl_beg_of_line(count, key) {
     rl_point = 0;
 }
+
+/* Move to the end of the line. */
 function rl_end_of_line(count, key) {
     rl_point = rl_line_buffer.length;
 }
+
+/* Move forward a word.  We do what Emacs does.  Handles multibyte chars. */
 function rl_forward_word(count, key) {
     rl_point = nextWordStop();
 }
+
+/* Move backward a word.  We do what Emacs does.  Handles multibyte chars. */
 function rl_backward_word(count, key) {
     rl_point = prevWordStop();
 }
@@ -96,17 +111,23 @@ function rl_backward_word(count, key) {
 /* Bindable commands for inserting and deleting text. */
 /******************************************************/
 
+/* Insert a character. */
 function rl_insert(count, key) {
     rl_insert_text(key);
 }
 //extern int rl_quoted_insert PARAMS((int, int));
 //extern int rl_tab_insert PARAMS((int, int));
+
+/* What to do when a NEWLINE is pressed.  We accept the whole line. */
 function rl_newline(count, key) {
     rl_linefunc(rl_line_buffer);
     rl_line_buffer = '';
     rl_point = 0;
 }
+
 //extern int rl_do_lowercase_version PARAMS((int, int));
+
+/* Rubout the character behind point. */
 function rl_rubout(count, key) {
     if (rl_point > 0) {
         var before = rl_line_buffer.substring(0, rl_point - 1);
@@ -115,11 +136,15 @@ function rl_rubout(count, key) {
         rl_point -= 1;
     }
 }
+
+/* Delete the character under the cursor.  Given a numeric argument,
+   kill that many characters instead. */
 function rl_delete(count, key) {
     var before = rl_line_buffer.substring(0, rl_point);
     var after = rl_line_buffer.substring(rl_point+1);
     rl_line_buffer = before + after;
 }
+
 //extern int rl_rubout_or_delete PARAMS((int, int));
 //extern int rl_delete_horizontal_space PARAMS((int, int));
 //extern int rl_delete_or_show_completions PARAMS((int, int));
@@ -131,6 +156,8 @@ function rl_delete(count, key) {
 
 //extern int rl_upcase_word PARAMS((int, int));
 //extern int rl_downcase_word PARAMS((int, int));
+
+/* Upcase the first letter, downcase the rest. */
 function rl_capitalize_word(count, key) {
     // note: actually incorrect, but CPython behaves that way too
     var c = rl_line_buffer[rl_point];
@@ -206,22 +233,36 @@ function rl_capitalize_word(count, key) {
 /* Bindable commands for killing and yanking text, and managing the kill ring. */
 /*******************************************************************************/
 
+/* Delete the word at point, saving the text in the kill ring. */
 function rl_kill_word(count, key) {
     var next = nextWordStop();
     rl_delete_text(rl_point, next);
 }
 //extern int rl_backward_kill_word PARAMS((int, int));
+
+/* Kill from here to the end of the line.  If COUNT is negative, kill
+   back to the line start instead. */
 function rl_kill_line(count, key) {
     rl_line_buffer = rl_line_buffer.substring(0, rl_point);
 }
 //extern int rl_backward_kill_line PARAMS((int, int));
 //extern int rl_kill_full_line PARAMS((int, int));
+
+/* This does what C-w does in Unix.  We can't prevent people from
+   using behaviour that they expect. */
 function rl_unix_word_rubout(count, key) {
     var prev = prevWordStop();
     rl_delete_text(prev, rl_point);
     rl_point = prev;
 }
 //extern int rl_unix_filename_rubout PARAMS((int, int));
+
+/* Here is C-u doing what Unix does.  You don't *have* to use these
+   key-bindings.  We have a choice of killing the entire line, or
+   killing from where we are to the start of the line.  We choose the
+   latter, because if you are a Unix weenie, then you haven't backspaced
+   into the line at all, and if you aren't, then you know what you are
+   doing. */
 function rl_unix_line_discard(count, key) {
     rl_line_buffer = rl_line_buffer.substring(rl_point);
     rl_point = 0;
@@ -230,9 +271,16 @@ function rl_unix_line_discard(count, key) {
 //extern int rl_kill_region PARAMS((int, int));
 //extern int rl_copy_forward_word PARAMS((int, int));
 //extern int rl_copy_backward_word PARAMS((int, int));
+
+/* Yank back the last killed text.  This ignores arguments. */
 function rl_yank(count, key) {
     rl_insert_text(latestCut);
 }
+
+/* If the last command was yank, or yank_pop, and the text just
+   before point is identical to the current kill item, then
+   delete that text from the line, rotate the index down, and
+   yank back some other text. */
 function rl_yank_pop(count, key) {
     rl_insert_text(secondLatestCut);
 }
@@ -261,6 +309,7 @@ function rl_yank_pop(count, key) {
 /* Bindable undo commands. */
 /***************************/
 
+/* Revert the current line to its previous state. */
 function rl_revert_line(count, key) {
     rl_line_buffer = '';
     rl_point = 0;
