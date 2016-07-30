@@ -61,7 +61,7 @@ function handle_meta_key(key) {
         "'": rl_quote_full,  // non-standard (from zsh)
         //'*': rl_insert_completions,
         '-': rl_digit_argument,
-        //'.': rl_yank_last_arg,
+        '.': rl_yank_last_arg,
         '0': rl_digit_argument,
         '1': rl_digit_argument,
         '2': rl_digit_argument,
@@ -77,7 +77,7 @@ function handle_meta_key(key) {
         '>': rl_end_of_history,
         //'?': rl_possible_completions,
         '\\': rl_delete_horizontal_space,
-        //'_': rl_yank_last_arg,
+        '_': rl_yank_last_arg,
         'b': rl_backward_word,
         'c': rl_capitalize_word,
         'd': rl_kill_word,
@@ -104,7 +104,7 @@ function handle_meta_ctrl_key(key) {
         //'j': rl_vi_editing_mode,
         //'m': rl_vi_editing_mode,
         'r': rl_revert_line,
-        //'y': rl_yank_nth_arg,
+        'y': rl_yank_nth_arg,
         //'[': rl_complete,
         ']': rl_backward_char_search,
     }[key];

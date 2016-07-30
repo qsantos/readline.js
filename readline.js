@@ -81,6 +81,60 @@ function rl_history_seek(index) {
     rl_end_of_line();
 }
 
+/* Tokenize a string (bash style). */
+function rl_tokenize(string) {
+    var tokens = [""];
+    var in_quotes = false;
+    var escaped = false;
+    for (var i = 0; i < string.length; i++) {
+        var c = string.charAt(i);
+        if (escaped) {
+            escaped = false;
+        } else if (in_quotes == '"') {
+            if (c == '\\') {
+                escaped = true;
+            } if (c == in_quotes) {
+                in_quotes = false;
+            }
+        } else if (in_quotes == "'") {
+            if (c == in_quotes) {
+                in_quotes = false;
+            }
+        } else if (c == '\\') {
+            escaped = true;
+        } else if (c == '"' || c == "'") {
+            in_quotes = c;
+        } else if (_rl_whitespace(c)) {
+            if (tokens[tokens.length-1] !== "") {
+                tokens.push("");
+            }
+            continue;
+        }
+        tokens[tokens.length-1] += c;
+    }
+    return tokens;
+}
+
+/* Extract the args specified, starting at FIRST, and ending at LAST.
+   The args are taken from STRING.  If either FIRST or LAST is < 0,
+   then make that arg count from the right (subtract from the number of
+   tokens, so that FIRST = -1 means the next to last token on the line).
+   If LAST is `$' the last arg from STRING is used. */
+function rl_args_extract(first, last, string) {
+    var tokens = rl_tokenize(string);
+    if (first < 0) {
+        first += tokens.length-1;
+    } else if (first == '$') {
+        first = tokens.length-1;
+    }
+    if (last < 0) {
+        last += tokens.length-1;
+    } else if (last == '$') {
+        last = tokens.length-1;
+    }
+    return tokens.slice(first, last+1).join(" ");
+}
+
 
 /**********************/
 /* Text killing utils */
@@ -716,8 +770,51 @@ function rl_yank_pop(count, key) {
     rl_yank(1, 0);
 }
 
-//extern int rl_yank_nth_arg PARAMS((int, int));
-//extern int rl_yank_last_arg PARAMS((int, int));
+/* Yank the COUNTh argument from the previous history line, skipping
+   HISTORY_SKIP lines before looking for the `previous line'. */
+function rl_yank_nth_arg(count, key, history_skip) {
+    history_skip = history_skip === undefined ? 0 : history_skip;
+    var line = rl_history[rl_history_index-1 - history_skip];
+    if (line === undefined) {
+        return false;
+    }
+    var args = rl_args_extract(count, count, line);
+    rl_insert_text(args);
+    return true;
+}
+
+var _rl_history_skip;
+var _rl_count_passed;
+var _rl_direction;
+var _rl_undo_needed;
+
+/* Yank the last argument from the previous history line.  This `knows'
+   how rl_yank_nth_arg treats a count of `$'.  With an argument, this
+   behaves the same as rl_yank_nth_arg. */
+function rl_yank_last_arg (count, key) {
+    if (_rl_last_func != rl_yank_last_arg) {
+        _rl_history_skip = 0;
+        _rl_count_passed = rl_explicit_arg ? count : '$';
+        _rl_direction = 1;
+    } else {
+        // cancel previous call
+        if (_rl_undo_needed) {
+            rl_undo_command(1, 0);
+        }
+        // change direction if needed
+        if (count < 0) {
+            _rl_direction = -_rl_direction;
+        }
+        // go back further in history
+        _rl_history_skip += _rl_direction;
+        if (_rl_history_skip < 0) {
+            _rl_history_skip = 0;
+        }
+    }
+
+    _rl_undo_needed = rl_yank_nth_arg(_rl_count_passed, key, _rl_history_skip);
+}
+
 /* Not available unless __CYGWIN__ is defined. */
 //extern int rl_paste_from_clipboard PARAMS((int, int));
 
