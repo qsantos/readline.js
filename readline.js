@@ -366,6 +366,14 @@ function rl_transpose_chars(count, key) {
 //extern int rl_char_search PARAMS((int, int));
 //extern int rl_backward_char_search PARAMS((int, int));
 
+/* Go to the match of the next parenthesis. (non-standard) */
+function rl_maching_paren(count, key) {
+    var i = find_matching_paren(rl_line_buffer, rl_point);
+    if (i >= 0) {
+        rl_point = i;
+    }
+}
+
 /**********************************************************************/
 /* Bindable commands for readline's interface to the command history. */
 /**********************************************************************/

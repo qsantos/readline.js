@@ -52,6 +52,7 @@ function handle_meta_key(key) {
     return {
         //' ': rl_set_mark,
         '#': rl_insert_comment,
+        '%': rl_maching_paren,  // non-standard
         //'&': rl_tilde_expand,
         //'*': rl_insert_completions,
         '-': rl_digit_argument,
