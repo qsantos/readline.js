@@ -7,8 +7,10 @@ function handle_standard_key(key) {
     }
 
     return {
+        'ArrowDown': rl_get_next_history,
         'ArrowLeft': rl_backward_char,
         'ArrowRight': rl_forward_char,
+        'ArrowUp': rl_get_previous_history,
         'Backspace': rl_rubout,
         'Delete': rl_delete,
         'End': rl_end_of_line,
@@ -32,8 +34,8 @@ function handle_ctrl_key(key) {
         'k': rl_kill_line,
         //'l': rl_clear_screen,
         'm': rl_newline,
-        //'n': rl_get_next_history,
-        //'p': rl_get_previous_history,
+        'n': rl_get_next_history,
+        'p': rl_get_previous_history,
         'q': rl_quoted_insert,
         //'r': rl_reverse_search_history,
         //'s': rl_forward_search_history,
@@ -69,9 +71,9 @@ function handle_meta_key(key) {
         '7': rl_digit_argument,
         '8': rl_digit_argument,
         '9': rl_digit_argument,
-        //'<': rl_beginning_of_history,
+        '<': rl_beginning_of_history,
         //'=': rl_possible_completions,
-        //'>': rl_end_of_history,
+        '>': rl_end_of_history,
         //'?': rl_possible_completions,
         '\\': rl_delete_horizontal_space,
         //'_': rl_yank_last_arg,

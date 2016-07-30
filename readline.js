@@ -62,6 +62,28 @@ function rl_end_undo_group() {
     rl_undo_group_depth--;
 }
 
+/*****************/
+/* History utils */
+/*****************/
+
+/* An array of strings.  This is where we store the history. */
+var rl_history = [""];
+
+/* The current location of the interactive history pointer. */
+var rl_history_index = 0;
+
+/* Seek a line of history by index. */
+function rl_history_seek(index) {
+    if (index < 0) {
+        index = 0;
+    } else if (index >= rl_history.length) {
+        index = rl_history.length;
+    }
+    rl_history_index = index;
+    rl_line_buffer = rl_history[rl_history_index];
+    rl_end_of_line();
+}
+
 
 
 var latestCut = '';
@@ -254,6 +276,14 @@ function rl_tab_insert(count, key) {
 
 /* What to do when a NEWLINE is pressed.  We accept the whole line. */
 function rl_newline(count, key) {
+    // history
+    rl_history_index = rl_history.length-1;
+    if (rl_line_buffer !== "") {
+        rl_history[rl_history_index] = rl_line_buffer;
+        rl_history_index += 1;
+        rl_history.push("");
+    }
+
     rl_linefunc(rl_line_buffer);
     rl_line_buffer = '';
     rl_point = 0;
@@ -454,10 +484,25 @@ function rl_maching_paren(count, key) {
 /* Bindable commands for readline's interface to the command history. */
 /**********************************************************************/
 
-//extern int rl_beginning_of_history PARAMS((int, int));
-//extern int rl_end_of_history PARAMS((int, int));
-//extern int rl_get_next_history PARAMS((int, int));
-//extern int rl_get_previous_history PARAMS((int, int));
+/* Go to the start of the history. */
+function rl_beginning_of_history(count, key) {
+    rl_history_seek(0);
+}
+
+/* Go to the end of the history.  (The current line). */
+function rl_end_of_history(count, key) {
+    rl_history_seek(rl_history.length-1);
+}
+
+/* Move down to the next history line. */
+function rl_get_next_history(count, key) {
+    rl_history_seek(rl_history_index + count);
+}
+
+/* Make the previous item of history the current line. */
+function rl_get_previous_history(count, key) {
+    rl_history_seek(rl_history_index - count);
+}
 
 /*******************************************************/
 /* Bindable commands for managing the mark and region. */
