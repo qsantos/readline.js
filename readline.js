@@ -9,20 +9,14 @@
 */
 
 
-/****************/
 /* Line buffer. */
-/****************/
-
 var rl_line_buffer = ''
 
-/*************************************************/
 /* The current offset in the current input line. */
-/*************************************************/
-
 var rl_point = 0;
 
 /* Insert the next typed character verbatim. */
-var rl_insert_next = false;
+var _rl_insert_next = false;
 
 /* The current value of the numeric argument specified by the user. */
 var rl_numeric_arg = 1;
@@ -40,26 +34,26 @@ var rl_comment_begin = '#';
 /* Undo utils */
 /**************/
 
-var rl_undo_list = []
-var rl_undo_group_depth = 0;
+var _rl_undo_list = []
+var _rl_undo_group_depth = 0;
 
 /* Remember how to undo something.  Concatenate some undos if that
    seems right. */
 function rl_add_undo() {
-    if (rl_undo_group_depth == 0) {
-        rl_undo_list.push([rl_line_buffer, rl_point]);
+    if (_rl_undo_group_depth == 0) {
+        _rl_undo_list.push([rl_line_buffer, rl_point]);
     }
 }
 
 /* Begin a group.  Subsequent undos are undone as an atomic operation. */
 function rl_begin_undo_group() {
     rl_add_undo();
-    rl_undo_group_depth++;
+    _rl_undo_group_depth++;
 }
 
 /* End an undo group started with rl_begin_undo_group (). */
 function rl_end_undo_group() {
-    rl_undo_group_depth--;
+    _rl_undo_group_depth--;
 }
 
 /*****************/
@@ -90,17 +84,17 @@ function rl_history_seek(index) {
 /***************/
 
 var _rl_reading_key = false;
-var _rrl_eading_key_callback;
+var _rl_reading_key_callback;
 
 function rl_read_key(callback) {
     _rl_reading_key = true;
     _rl_reading_key_callback = callback;
 }
 
-var latestCut = '';
-var secondLatestCut = '';
+var _rl_latest_cut = '';
+var _rl_second_latest_cut = '';
 
-function whitespace(c) {
+function _rl_whitespace(c) {
     return c == ' ' || c == '\t';
 }
 
@@ -125,8 +119,8 @@ function rl_delete_text(from, to) {
 
 function rl_kill_text(from, to) {
     rl_delete_text(from, to);
-    secondLatestCut = latestCut;
-    latestCut = rl_line_buffer.substring(from, to);
+    _rl_second_latest_cut = _rl_latest_cut;
+    _rl_latest_cut = rl_line_buffer.substring(from, to);
 }
 
 /* Insert a string of text into the line at point.  This is the only
@@ -277,7 +271,7 @@ function rl_insert(count, key) {
 
 /* Insert a raw character (e.g. ^A) */
 function rl_quoted_insert(count, key) {
-    rl_insert_next = true;
+    _rl_insert_next = true;
 }
 
 /* Insert a tab character. */
@@ -298,7 +292,7 @@ function rl_newline(count, key) {
     rl_linefunc(rl_line_buffer);
     rl_line_buffer = '';
     rl_point = 0;
-    rl_undo_list = [];
+    _rl_undo_list = [];
 }
 
 //extern int rl_do_lowercase_version PARAMS((int, int));
@@ -348,11 +342,11 @@ function rl_rubout_or_delete(count, key) {
 /* Delete all spaces and tabs around point. */
 function rl_delete_horizontal_space(count, key) {
     var start = rl_point;
-    while (start > 0 && whitespace(rl_line_buffer[start-1])) {
+    while (start > 0 && _rl_whitespace(rl_line_buffer[start-1])) {
         start--;
     }
     var stop = rl_point;
-    while (stop < rl_line_buffer.length && whitespace(rl_line_buffer[stop])) {
+    while (stop < rl_line_buffer.length && _rl_whitespace(rl_line_buffer[stop])) {
         stop++;
     }
     rl_delete_text(start, stop);
@@ -654,7 +648,7 @@ function rl_unix_line_discard(count, key) {
 
 /* Yank back the last killed text.  This ignores arguments. */
 function rl_yank(count, key) {
-    rl_insert_text(latestCut, count);
+    rl_insert_text(_rl_latest_cut, count);
 }
 
 /* If the last command was yank, or yank_pop, and the text just
@@ -662,7 +656,7 @@ function rl_yank(count, key) {
    delete that text from the line, rotate the index down, and
    yank back some other text. */
 function rl_yank_pop(count, key) {
-    rl_insert_text(secondLatestCut, count);
+    rl_insert_text(_rl_second_latest_cut, count);
 }
 //extern int rl_yank_nth_arg PARAMS((int, int));
 //extern int rl_yank_last_arg PARAMS((int, int));
@@ -691,8 +685,8 @@ function rl_yank_pop(count, key) {
 
 /* Revert the current line to its previous state. */
 function rl_revert_line(count, key) {
-    rl_line_buffer = rl_undo_list[0];
-    rl_undo_list = [];
+    rl_line_buffer = _rl_undo_list[0];
+    _rl_undo_list = [];
 }
 
 /* Do some undoing of things that were done. */
@@ -703,10 +697,10 @@ function rl_undo_command(count, key) {
 
     var undo;
     for (var _ = 0; _ < count; _++) {
-        if (rl_undo_list.length == 0) {
+        if (_rl_undo_list.length == 0) {
             return;
         }
-        undo = rl_undo_list.pop();
+        undo = _rl_undo_list.pop();
     }
     rl_line_buffer = undo[0];
     rl_point = undo[1];
@@ -855,7 +849,7 @@ function rl_handle_event(event) {
     var count = rl_numeric_arg * rl_arg_sign;
     count = Math.min(count, 1000000);
 
-    if (rl_insert_next) {
+    if (_rl_insert_next) {
         var text;
         if (altKey && event.ctrlKey) {
             // technically, \x1b/escape/meta/alt is inserted
@@ -878,7 +872,7 @@ function rl_handle_event(event) {
         } else {
             rl_insert(count, event.key);
         }
-        rl_insert_next = false;
+        _rl_insert_next = false;
         rl_discard_argument();
         return true;
     }
