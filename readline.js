@@ -25,6 +25,8 @@ var rl_explicit_arg = false;
 /* Temporary value used while generating the argument. */
 var rl_arg_sign = 1;
 
+/* The string marking the beginning of a comment. */
+var rl_comment_begin = '#';
 
 var latestCut = '';
 var secondLatestCut = '';
@@ -271,7 +273,21 @@ function rl_delete_horizontal_space(count, key) {
     rl_kill_text(start, stop);
 }
 //extern int rl_delete_or_show_completions PARAMS((int, int));
-//extern int rl_insert_comment PARAMS((int, int));
+
+/* Turn the current line into a comment in shell history.
+   A K*rn shell style function. */
+function rl_insert_comment(count, key) {
+    rl_beg_of_line(1, key);
+
+    var check_start = rl_explicit_arg || rl_arg_sign == -1;
+    if (check_start && rl_line_buffer.startsWith(rl_comment_begin)) {
+        rl_kill_text(rl_point, rl_comment_begin.length);
+    } else {
+        rl_insert_text(rl_comment_begin);
+    }
+
+    rl_newline (1, '\n');
+}
 
 /****************************************/
 /* Bindable commands for changing case. */

@@ -51,7 +51,7 @@ function handle_ctrl_key(key) {
 function handle_meta_key(key) {
     return {
         //' ': rl_set_mark,
-        //'#': rl_insert_comment,
+        '#': rl_insert_comment,
         //'&': rl_tilde_expand,
         //'*': rl_insert_completions,
         '-': rl_digit_argument,
