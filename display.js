@@ -4,7 +4,7 @@ var code = document.querySelector('#code');
 var enableInput = true;
 
 function update() {
-    write(rl_prompt + rl_line_buffer);
+    write('\x1b[1K\r' + rl_prompt + rl_line_buffer);
     code.innerHTML = tty2html();
     code.scrollTop = code.scrollHeight;
 }
