@@ -54,16 +54,6 @@ function rl_handle_event(event) {
         return;
     }
 
-    // since Meta (altKey) basically just escapes keys,
-    // we will pretend that Escape is a sticky Meta
-    var altKey = event.altKey;
-    if (force_next_meta) {
-        altKey = true;
-        force_next_meta = false;
-    } else if (event.key == 'Escape') {
-        force_next_meta = true;
-    }
-
     if (_rl_reading_key) {
         _rl_reading_key = false;
         _rl_reading_key_callback(event.key);
@@ -73,14 +63,22 @@ function rl_handle_event(event) {
     var count = rl_numeric_arg * rl_arg_sign;
     count = Math.min(count, 1000000);
 
+    // raw character insertion
     if (_rl_insert_next) {
+        if (event.key == 'Escape') {
+            rl_insert(count, '\x1b');
+            return true;
+        } else if (event.key.length > 1) {
+            return false;
+        }
+
         var text;
-        if (altKey && event.ctrlKey) {
+        if (event.altKey && event.ctrlKey) {
             // technically, \x1b/escape/meta/alt is inserted
             // and the Ctrl+key combination is executed;
             // this is uncanny so we'll skip that part
             rl_insert(count, '\x1b');
-        } else if (altKey) {
+        } else if (event.altKey) {
             rl_insert(count, '\x1b');
             rl_insert(1, event.key);
         } else if (event.ctrlKey) {
@@ -99,6 +97,16 @@ function rl_handle_event(event) {
         _rl_insert_next = false;
         rl_discard_argument();
         return true;
+    }
+
+    // since Meta (altKey) basically just escapes keys,
+    // we will pretend that Escape is a sticky Meta
+    var altKey = event.altKey;
+    if (force_next_meta) {
+        altKey = true;
+        force_next_meta = false;
+    } else if (event.key == 'Escape') {
+        force_next_meta = true;
     }
 
     // dispatch
