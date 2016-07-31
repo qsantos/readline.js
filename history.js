@@ -17,7 +17,7 @@ var rl_history_index = rl_history.length;
 
 /* Add a line to the history. */
 function rl_history_append() {
-    if (rl_line_buffer !== "") {
+    if (rl_line_buffer && rl_line_buffer != rl_history[rl_history.length-1]) {
         rl_history.push(rl_line_buffer);
     }
     rl_history_index = rl_history.length;
