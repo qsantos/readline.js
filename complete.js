@@ -34,6 +34,18 @@ function _rl_find_completion_word() {
     return 0;
 }
 
+/* Find the common prefix of the list of matches. */
+function compute_lcd_of_matches(matches) {
+    for (var i = 0; i < matches[0].length; i++) {
+        for (var j = 1; j < matches.length; j++) {
+            if (matches[j].charCodeAt(i) != matches[0].charCodeAt(i)) {
+                return matches[0].substring(0, i);
+            }
+        }
+    }
+    return matches[0];
+}
+
 /* Return an Array of strings which is a list of completions for TEXT.
 
    ENTRY_FUNCTION is a function of two args, and returns a strings.
@@ -77,9 +89,13 @@ function rl_complete(count, key) {
     var start = _rl_find_completion_word();
     var text = rl_line_buffer.substring(start, rl_point);
     var matches = rl_completion_matches(text, rl_completion_entry_function);
-    if (matches.length == 1) {
-        rl_replace_text(start, rl_point, matches[0]);
+
+    // abort if no match is found
+    if (matches.length == 0) {
+        return;
     }
+
+    rl_replace_text(start, rl_point, compute_lcd_of_matches(matches));
 }
 
 //extern int rl_possible_completions PARAMS((int, int));
