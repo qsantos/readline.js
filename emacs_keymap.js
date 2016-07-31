@@ -33,7 +33,7 @@ function handle_ctrl_key(key) {
         //'i': rl_complete,
         'j': rl_newline,
         'k': rl_kill_line,
-        //'l': rl_clear_screen,
+        'l': rl_clear_screen,
         'm': rl_newline,
         'n': rl_get_next_history,
         'p': rl_get_previous_history,

@@ -130,7 +130,13 @@ function rl_backward_word(count, key) {
     }
 }
 //extern int rl_refresh_line PARAMS((int, int));
-//extern int rl_clear_screen PARAMS((int, int));
+
+/* C-l typed to a line without quoting clears the screen, and then reprints
+   the prompt and the current input line.  Given a numeric arg, redraw only
+   the current line. */
+function rl_clear_screen(count, key) {
+    write('\x1b[2J\x1b[H');
+}
 //extern int rl_skip_csi_sequence PARAMS((int, int));
 //extern int rl_arrow_keys PARAMS((int, int));
 
