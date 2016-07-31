@@ -47,6 +47,39 @@ function _rl_whitespace(c) {
     return c == ' ' || c == '\t';
 }
 
+/* Insert a raw character. For now, it is passed as a Javascript event. */
+function rl_raw_insert(event, count) {
+    if (event.key.length > 1) {
+        if (event.key == 'Escape') {
+            rl_insert(count, '\x1b');
+        }
+        return;
+    }
+
+    var text;
+    if (event.altKey && event.ctrlKey) {
+        // technically, \x1b/escape/meta/alt is inserted
+        // and the Ctrl+key combination is executed;
+        // this is uncanny so we'll skip that part
+        rl_insert(count, '\x1b');
+    } else if (event.altKey) {
+        rl_insert(count, '\x1b');
+        rl_insert(1, event.key);
+    } else if (event.ctrlKey) {
+        if (event.key == '?') {  // ^?
+            rl_insert(count, '\x7f');
+        } else if (event.key >= '@') {
+            var code = event.key.toUpperCase().charCodeAt() - 64;
+            var c = String.fromCharCode(code);
+            rl_insert(count, c);
+        } else {
+            rl_insert(count, event.key);
+        }
+    } else {
+        rl_insert(count, event.key);
+    }
+}
+
 var force_next_meta = false;
 function rl_handle_event(event) {
     // ignore Shift, Control, Alt and AltGraph by themselves
@@ -65,36 +98,8 @@ function rl_handle_event(event) {
 
     // raw character insertion
     if (_rl_insert_next) {
-        if (event.key == 'Escape') {
-            rl_insert(count, '\x1b');
-            return true;
-        } else if (event.key.length > 1) {
-            return false;
-        }
-
-        var text;
-        if (event.altKey && event.ctrlKey) {
-            // technically, \x1b/escape/meta/alt is inserted
-            // and the Ctrl+key combination is executed;
-            // this is uncanny so we'll skip that part
-            rl_insert(count, '\x1b');
-        } else if (event.altKey) {
-            rl_insert(count, '\x1b');
-            rl_insert(1, event.key);
-        } else if (event.ctrlKey) {
-            if (event.key == '?') {  // ^?
-                rl_insert(count, '\x7f');
-            } else if (event.key >= '@') {
-                var code = event.key.toUpperCase().charCodeAt() - 64;
-                var c = String.fromCharCode(code);
-                rl_insert(count, c);
-            } else {
-                rl_insert(count, event.key);
-            }
-        } else {
-            rl_insert(count, event.key);
-        }
         _rl_insert_next = false;
+        rl_raw_insert(event, count);
         rl_discard_argument();
         return true;
     }
