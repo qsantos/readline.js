@@ -160,11 +160,16 @@ function rl_tab_insert(count, key) {
 /* What to do when a NEWLINE is pressed.  We accept the whole line. */
 function rl_newline(count, key) {
     rl_history_append();
-    rl_linefunc(rl_line_buffer);
+    var line = rl_line_buffer + '\n';
+
     rl_line_buffer = '';
     rl_point = 0;
     rl_mark = 0;
     _rl_undo_list = [];
+
+    write(line);
+    rl_linefunc(line);
+    write(rl_prompt);
 }
 
 //extern int rl_do_lowercase_version PARAMS((int, int));

@@ -12,6 +12,7 @@ var rl_linefunc;
 function rl_callback_handler_install(prompt, linefunc) {
     rl_prompt = prompt;
     rl_linefunc = linefunc;
+    write(rl_prompt);
     update();
 }
 
@@ -78,5 +79,5 @@ code.addEventListener('drop', function(event) {
     event.preventDefault();
 });
 
-rl_callback_handler_install('<span style="color:green">$</span> ', alert);
+rl_callback_handler_install('<span style="color:green">$</span> ', write);
 code.focus();
