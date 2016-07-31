@@ -17,6 +17,7 @@ function handle_standard_key(key) {
         'Home': rl_beg_of_line,
         'Insert': rl_overwrite_mode,  // non-standard
         'Enter': rl_newline,  // see Ctrl+j
+        'Tab': rl_complete,  // see Ctrl+i
     }[key];
 }
 
@@ -30,7 +31,7 @@ function handle_ctrl_key(key) {
         'f': rl_forward_char,
         //'g': rl_abort,
         'h': rl_rubout,
-        //'i': rl_complete,
+        'i': rl_complete,
         'j': rl_newline,
         'k': rl_kill_line,
         'l': rl_clear_screen,
@@ -105,7 +106,7 @@ function handle_meta_ctrl_key(key) {
         //'m': rl_vi_editing_mode,
         'r': rl_revert_line,
         'y': rl_yank_nth_arg,
-        //'[': rl_complete,
+        '[': rl_complete,
         ']': rl_backward_char_search,
     }[key];
 }
