@@ -1,36 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Readline in the browser!</title>
+<link rel="stylesheet" href="tty.css">
 <div id="code" contenteditable autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>
 <div id="unfocus_help">Press the right <code class="key" title="control key">Ctrl</code> to restore the normal behavior of keybindings</div>
 <style type="text/css">
 body{font-size:x-large;}
-#code {
-    width:880px;
-	height:530px;
-	margin:0 auto;
-	color:white;
-	background-color:black;
-	border:3px solid #e8e8e8;
-	resize:both;
-	word-wrap:break-word;
-	overflow:scroll;
-	font-family:monospace;
-    font-weight: bold;
-}
-.caret {
-    border:1px solid green;
-}
-.escape {
-    color: #55f;
-}
-.parens {
-    background-color:#0aa;
-}
-#code:focus .caret {
-    background-color:green;
-    border:none;
-}
 #unfocus_help {
     visibility: hidden;
     text-align: center;
@@ -53,8 +28,6 @@ body{font-size:x-large;}
 		0 2px 3px #333;
 	text-shadow: 0px 1px 0px #f5f5f5;
 }
-pre {
-}
 </style>
 <script type="text/javascript" src="parens.js"></script>
 <script type="text/javascript" src="text.js"></script>
@@ -64,4 +37,5 @@ pre {
 <script type="text/javascript" src="history.js"></script>
 <script type="text/javascript" src="readline.js"></script>
 <script type="text/javascript" src="emacs_keymap.js"></script>
+<script type="text/javascript" src="tty.js"></script>
 <script type="text/javascript" src="display.js"></script>

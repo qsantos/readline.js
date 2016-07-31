@@ -3,25 +3,8 @@
 var code = document.querySelector('#code');
 var enableInput = true;
 
-function textclass(class_, text) {
-    return '<span class="' + class_ + '">' + text + '</span>';
-}
-
-function escape(text) {
-    // html entities
-    text = text.replace(/&/g, '&amp;');
-    text = text.replace(/</g, '&lt;');
-    text = text.replace(/ /g, '&nbsp;');
-
-    // non-printable characters
-    text = text.replace(/\x1b/g, textclass('escape', '^['));  // escape
-    text = text.replace(/[\x00-\x1f]/g, function(c) {
-        var name = String.fromCharCode(64 + c.charCodeAt());
-        return textclass('escape', '^' + name);
-    });
-    text = text.replace(/\x7f/g, textclass('escape', '^?'));
-
-    return text;
+function update() {
+    code.innerHTML = tty2html();
 }
 
 var rl_prompt = "";
@@ -30,19 +13,6 @@ function rl_callback_handler_install(prompt, linefunc) {
     rl_prompt = prompt;
     rl_linefunc = linefunc;
     update();
-}
-
-function update() {
-    var before = rl_line_buffer.substring(0, rl_point);
-    var inner;
-    if (rl_point == rl_line_buffer.length) {
-        inner = '&nbsp';
-    } else {
-        inner = escape(rl_line_buffer.charAt(rl_point));
-    }
-    var inner = textclass('caret', inner);
-    var after = rl_line_buffer.substring(rl_point + 1);
-    code.innerHTML = rl_prompt + escape(before) + inner + escape(after);
 }
 
 code.addEventListener('focus', function(event) {
