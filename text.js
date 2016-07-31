@@ -39,6 +39,20 @@ function rl_delete_text(from, to) {
     }
 }
 
+/* Replace the contents of the line buffer between START and END with
+   TEXT.  The operation is undoable. */
+function rl_replace_text(start, end, text) {
+    var orig_point = rl_point;
+
+    rl_begin_undo_group();
+    rl_delete_text(start, end);
+    rl_point = start;
+    rl_insert_text(text);
+    rl_end_undo_group();
+
+    rl_point = orig_point;
+}
+
 
 /********************************************/
 /* Bindable commands for moving the cursor. */
@@ -251,26 +265,15 @@ function rl_insert_comment(count, key) {
 
 /* Put the beginning of the line between single quotes. */
 function rl_quote(count, key) {
-    rl_begin_undo_group();
-
     var quoted = rl_line_buffer.substring(0, rl_point);
     quoted = quoted.replace(/'/g, "'\\''");
-    rl_delete_text(0, rl_point);
-    rl_beg_of_line(0, 1);
-    rl_insert_text("'" + quoted + "'");
-
-    rl_end_undo_group();
+    rl_replace_text(0, rl_point, "'" + quoted + "'");
 }
 
 /* Put the full line between single quotes. */
 function rl_quote_full(count, key) {
-    rl_begin_undo_group();
-
     var quoted = rl_line_buffer.quoted.replace(/'/g, "\\'");
-    rl_delete_text(0, rl_line_buffer.length);
-    rl_insert_text("'" + quoted + "'");
-
-    rl_end_undo_group();
+    rl_replace_text(0, rl_line_buffer.length, "'" + quoted + "'");
 }
 
 
@@ -313,8 +316,7 @@ function rl_change_case(count, op) {
     }
 
     var extract = rl_line_buffer.substring(start, stop);
-    rl_delete_text(start, stop);
-    rl_insert_text(op(extract));
+    rl_replace_text(start, stop, op(extract));
 
     rl_end_undo_group();
 }
