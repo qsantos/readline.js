@@ -5,6 +5,7 @@ var enableInput = true;
 
 function update() {
     code.innerHTML = tty2html();
+    code.scrollTop = code.scrollHeight;
 }
 
 var rl_prompt = "";
