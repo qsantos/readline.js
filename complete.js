@@ -86,16 +86,35 @@ var _rl_completion_matches;
    that does the initial simple matching selection algorithm (see
    rl_completion_matches ()). */
 function rl_complete(count, key) {
-    var start = _rl_find_completion_word();
-    var text = rl_line_buffer.substring(start, rl_point);
-    var matches = rl_completion_matches(text, rl_completion_entry_function);
+    if (_rl_last_func != rl_complete) {
+        _rl_completion_state = -1;
+        _rl_completion_start = _rl_find_completion_word();
+        var text = rl_line_buffer.substring(_rl_completion_start, rl_point);
+        _rl_completion_matches = (
+            rl_completion_matches(text, rl_completion_entry_function)
+        );
+    }
 
     // abort if no match is found
-    if (matches.length == 0) {
+    if (_rl_completion_matches.length == 0) {
         return;
     }
 
-    rl_replace_text(start, rl_point, compute_lcd_of_matches(matches));
+    // choose the substitution
+    var substitution;
+    if (_rl_completion_state == -1) {
+        substitution = compute_lcd_of_matches(_rl_completion_matches);
+    } else {
+        substitution = _rl_completion_matches[_rl_completion_state];
+    }
+
+    // apply it
+    rl_replace_text(_rl_completion_start, rl_point, substitution);
+
+    _rl_completion_state++;
+    if (_rl_completion_state >= _rl_completion_matches.length) {
+        _rl_completion_state = 0;
+    }
 }
 
 //extern int rl_possible_completions PARAMS((int, int));
