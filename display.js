@@ -5,6 +5,10 @@ var enableInput = true;
 
 function update() {
     write('\x1b[1K\r' + rl_prompt + rl_line_buffer);
+    var d = rl_line_buffer.length - rl_point;
+    if (d > 0) {
+        write('\x1b[' + d + 'D');
+    }
     code.innerHTML = tty2html();
     code.scrollTop = code.scrollHeight;
 }
