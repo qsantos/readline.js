@@ -1,25 +1,10 @@
 #code {
-    width:880px;
-	height:530px;
-	margin:0 auto;
-	color:white;
-	background-color:black;
+    width:880px; height:530px; margin:0 auto;
+	color:white; background-color:black;
 	border:3px solid #e8e8e8;
-	resize:both;
-	word-wrap:break-word;
-	overflow:scroll;
-	font-family:monospace;
+	resize:both; overflow:scroll;
+	font-family:monospace; word-wrap:break-word;
 }
-.caret {
-    border:1px solid green;
-}
-.escape {
-    color: #55f;
-}
-.parens {
-    background-color:#0aa;
-}
-#code:focus .caret {
-    background-color:green;
-    border:none;
-}
+.escape { color: #55f; }
+.caret { border:1px solid green; }
+#code:focus .caret { background-color:green; border:none; }
