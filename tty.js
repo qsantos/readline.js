@@ -14,6 +14,24 @@ var empty_char = {
 
 /* Adds a character to the screen at the current position */
 function write_char(c) {
+    // collect active classes depending on attributes
+    var classes = [];
+    if (reverse) {
+        var tmp = foreground || 9;
+        foreground = background || 0;
+        background = tmp;
+        classes.push('tty_foreground_' + foreground);
+        classes.push('tty_background_' + background);
+    } else {
+        if (foreground != null) { classes.push('tty_foreground_' + foreground); }
+        if (background != null) { classes.push('tty_background_' + background); }
+    }
+    if (bold)      { classes.push('tty_bold'); }
+    if (dim)       { classes.push('tty_dim'); }
+    if (underline) { classes.push('tty_underscore'); }
+    if (blinking)  { classes.push('tty_blinking'); }
+    if (invisible) { classes.push('tty_invisible'); }
+
     // ensure the grid cell exists
     while (cursor_row >= screen.length) {
         screen.push([]);
@@ -26,7 +44,7 @@ function write_char(c) {
     // add character
     current_line[cursor_col] = {
         char: c,
-        classes: [],
+        classes: classes,
     };
     cursor_col++;
 }

@@ -33,8 +33,40 @@ function erase_line(param) {
     }
 }
 
+// terminal attributes
+var foreground, background;
+var bold, dim, underline, blinking, reverse, invisible;
+function reset_attributes() {
+    foreground = background = null;
+    bold = dim = underline = blinking = reverse = invisible = false;
+}
+function set_graphics_mode(attributes) {
+    if (!attributes) {
+        reset_attributes();
+        return;
+    }
+
+    // parse attributes to set
+    attributes.split(';').forEach(function(attribute) {
+        var code = parseInt(attribute);
+        if (false);
+        else if (attribute == '') { reset_attributes(); }
+        else if (code == 0) { reset_attributes(); }
+        else if (code == 1) { bold = true; }
+        else if (code == 2) { dim = true; }
+        else if (code == 4) { underline = true; }
+        else if (code == 5) { blinking = true; }
+        else if (code == 7) { reverse = true; }
+        else if (code == 8) { invisible = true; }
+        else if (code < 30) { }
+        else if (code < 40) { foreground = code - 30; }
+        else if (code < 48) { background = code - 40; }
+    });
+}
+
 escape_sequences = {
     'D': cursor_backward,
     'J': erase_display,
     'K': erase_line,
+    'm': set_graphics_mode,
 }

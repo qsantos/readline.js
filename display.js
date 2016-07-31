@@ -85,5 +85,6 @@ code.addEventListener('drop', function(event) {
     event.preventDefault();
 });
 
-rl_callback_handler_install('<span style="color:green">$</span> ', write);
+var PS1 = '\x1b[32m$\x1b[m ';
+rl_callback_handler_install(PS1, write);
 code.focus();
