@@ -1,5 +1,53 @@
+function cursor_position(param) {
+    param = param.split(';');
+
+    // set row
+    cursor_row = (parseInt(param[0]) || 1)  - 1;
+    // clamp
+    if (cursor_row < 0) {
+        cursor_row = 0;
+    }
+    if (cursor_row >= screen.length) {
+        cursor_row = screen.length - 1;
+    }
+
+    var current_line = screen[cursor_row];
+
+    // set column
+    cursor_col = (parseInt(param[1]) || 1) - 1;
+    // clamp
+    if (cursor_col < 0) {
+        cursor_col = 0;
+    }
+    if (cursor_col > current_line.length) {
+        cursor_col = current_line.length - 1;
+    }
+}
+
+function cursor_up(param) {
+    cursor_row -= parseInt(param) || 1;
+    if (cursor_row < 0) {
+        cursor_row = 0;
+    }
+}
+
+function cursor_down(param) {
+    cursor_row += parseInt(param) || 1;
+    if (cursor_row >= screen.length) {
+        cursor_row = screen.length - 1;
+    }
+}
+
+function cursor_forward(param) {
+    var current_line = screen[cursor_row];
+    cursor_col += parseInt(param) || 1;
+    if (cursor_col >= current_line.length) {
+        cursor_col = current_line.length - 1;
+    }
+}
+
 function cursor_backward(param) {
-    cursor_col -= parseInt(param);
+    cursor_col -= parseInt(param) || 1;
     if (cursor_col < 0) {
         cursor_col = 0;
     }
@@ -65,6 +113,11 @@ function set_graphics_mode(attributes) {
 }
 
 escape_sequences = {
+    'H': cursor_position,
+    'f': cursor_position,
+    'A': cursor_up,
+    'B': cursor_down,
+    'C': cursor_forward,
     'D': cursor_backward,
     'J': erase_display,
     'K': erase_line,
