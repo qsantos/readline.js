@@ -52,6 +52,8 @@ function rl_raw_insert(event, count) {
     if (event.key.length > 1) {
         if (event.key == 'Escape') {
             rl_insert(count, '\x1b');
+        } else if (event.key == 'Backspace') {
+            rl_insert(count, '\x7f');
         }
         return;
     }

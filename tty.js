@@ -23,7 +23,7 @@ function escape(text) {
         var name = String.fromCharCode(64 + c.charCodeAt());
         return textclass('escape', '^' + name);
     });
-    text = text.replace(/\x7f/g, textclass('escape', '^?'));
+    text = text.replace(/\x7f/g, textclass('escape', '^?'));  // delete
 
     return text;
 }
