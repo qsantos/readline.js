@@ -43,7 +43,7 @@ function rl_beginning_of_history(count, key) {
 
 /* Go to the end of the history.  (The current line). */
 function rl_end_of_history(count, key) {
-    rl_history_seek(rl_history.length-1);
+    rl_history_seek(rl_history.length);
 }
 
 /* Move down to the next history line. */
