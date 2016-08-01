@@ -99,7 +99,7 @@ function rl_unix_word_rubout(count, key) {
    into the line at all, and if you aren't, then you know what you are
    doing. */
 function rl_unix_line_discard(count, key) {
-    rl_kill_line(count, key);
+    rl_backward_kill_line(count, key);
 }
 
 /* Copy the text in the region to the kill ring. */
