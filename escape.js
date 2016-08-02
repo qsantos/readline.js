@@ -5,9 +5,19 @@ function cursor_backward(param) {
     }
 }
 
-function erase_line(_) {
-    var current_line = screen[screen.length-1];
-    current_line.splice(0);
+function erase_line(param) {
+    param = parseInt(param) || 0;
+    var current_line = screen[cursor_row] || [];
+    if (param == 0) {  // clear line from cursor right
+        current_line.splice(cursor_col);
+    } else if (param == 1) {  // clear line from cursor left
+        var stop = cursor_col;
+        for (cursor_col = 0; cursor_col <= stop; ) {
+            write_char(' ');
+        }
+    } else if (param == 2) {  // clear entire line
+        current_line.splice(0);
+    }
 }
 
 escape_sequences = {
