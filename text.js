@@ -167,6 +167,11 @@ function rl_insert(count, key) {
     rl_insert_text(key, count);
 }
 
+/* Insert a new line. */
+function rl_insert_newline(count, key) {
+    rl_insert(count, '\n');
+}
+
 /* Insert a raw character (e.g. ^A) */
 function rl_quoted_insert(count, key) {
     _rl_insert_next = true;

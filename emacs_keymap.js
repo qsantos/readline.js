@@ -91,6 +91,7 @@ function handle_meta_key(key) {
         'u': rl_upcase_word,
         'y': rl_yank_pop,
         //'~': rl_tilde_expand,
+        'enter': rl_insert_newline,  // non-standard (from zsh)
         'backspace': rl_backward_kill_word,
     }[key];
 }
