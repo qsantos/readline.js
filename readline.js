@@ -15,6 +15,9 @@
 /* Line buffer. */
 var rl_line_buffer = ''
 
+/* Previous line buffer, for redisplay. */
+var rl_previous_line_buffer = '';
+
 /* The current offset in the current input line. */
 var rl_point = 0;
 
@@ -88,6 +91,8 @@ function rl_handle_event(event) {
     if (['Shift', 'Control', 'Alt', 'AltGraph'].indexOf(event.key) >= 0) {
         return;
     }
+
+    rl_previous_line_buffer = rl_line_buffer;
 
     if (_rl_reading_key) {
         _rl_reading_key = false;
