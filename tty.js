@@ -3,20 +3,38 @@
 /* The screen is a list of lines; each line is a list of character with their
  * associated metadata */
 var screen = [[]];
+var cursor_row = 0;
+var cursor_col = 0;
 
 /* Adds a character to the screen at the current position */
 function write_char(c) {
-    var current_line = screen[screen.length-1];
-    current_line.push({
+    // ensure the grid cell exists
+    while (cursor_row >= screen.length) {
+        screen.push([]);
+    }
+    var current_line = screen[cursor_row];
+    while (cursor_col >= current_line.length) {
+        current_line.push(empty_char);
+    }
+
+    // add character
+    current_line[cursor_col] = {
         char: c,
-    });
+    };
+    cursor_col++;
 }
 
 function write(text) {
     for (var i = 0; i < text.length; i++) {
         var c = text.charAt(i);
         if (c == '\n') {
-            screen.push([]);
+            cursor_col = 0;
+            cursor_row++;
+            if (cursor_row >= screen.length) {
+                screen.push([]);
+            }
+        } else if (c == '\r') {
+            cursor_col = 0;
         // escape sequences
         } else if (c == '\x1b' && text.charAt(i+1) == '[') {
             // extract the parameters and the action
