@@ -20,6 +20,7 @@ function write_char(c) {
     // add character
     current_line[cursor_col] = {
         char: c,
+        classes: [],
     };
     cursor_col++;
 }
@@ -67,7 +68,15 @@ function tty2html() {
     for (var row = 0; row < screen.length; row++) {
         var line = screen[row];
         for (var col = 0; col < line.length; col++) {
-            var c = line[col].char;
+            var cell = line[col];
+            var c = cell.char;
+
+            // set up the decoration for the current character
+            var classes = cell.classes;
+            if (classes.length != 0) {
+                ret += '<span class="' + classes.join(' ') + '">';
+            }
+
             if (false);
             // html entities
             else if (c == '&')  { ret += '&amp;'; }
@@ -81,6 +90,11 @@ function tty2html() {
                 ret += textclass('escape', '^?');
             } else {
                 ret += c;
+            }
+
+            // close decorations for the current character
+            if (classes.length != 0) {
+                ret += '</span>';
             }
         }
         ret += '<br>';
