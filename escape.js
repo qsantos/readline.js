@@ -53,6 +53,18 @@ function cursor_backward(param) {
     }
 }
 
+var saved_cursor = {row: 0, col: 0};
+
+function save_cursor_position(_) {
+    saved_cursor.row = cursor_row;
+    saved_cursor.col = cursor_col;
+}
+
+function restore_cursor_position(_) {
+    cursor_row = saved_cursor.row;
+    cursor_col = saved_cursor.col;
+}
+
 function erase_display(param) {
     param = parseInt(param) || 0;
     if (param == 0) {
@@ -119,6 +131,8 @@ escape_sequences = {
     'B': cursor_down,
     'C': cursor_forward,
     'D': cursor_backward,
+    's': save_cursor_position,
+    'u': restore_cursor_position,
     'J': erase_display,
     'K': erase_line,
     'm': set_graphics_mode,
