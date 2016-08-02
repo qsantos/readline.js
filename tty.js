@@ -6,6 +6,12 @@ var screen = [[]];
 var cursor_row = 0;
 var cursor_col = 0;
 
+/* An empty char to end at the end of the current line, to show the cursor */
+var empty_char = {
+    char: ' ',
+    classes: [],
+};
+
 /* Adds a character to the screen at the current position */
 function write_char(c) {
     // ensure the grid cell exists
@@ -66,13 +72,16 @@ function textclass(class_, text) {
 function tty2html() {
     var ret = '';
     for (var row = 0; row < screen.length; row++) {
-        var line = screen[row];
+        var line = screen[row].concat(empty_char);
         for (var col = 0; col < line.length; col++) {
             var cell = line[col];
             var c = cell.char;
 
             // set up the decoration for the current character
             var classes = cell.classes;
+            if (row == cursor_row && col == cursor_col) {
+                classes = classes.concat(['tty_cursor']);
+            }
             if (classes.length != 0) {
                 ret += '<span class="' + classes.join(' ') + '">';
             }
