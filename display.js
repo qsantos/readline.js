@@ -7,16 +7,19 @@ function update() {
     // reset all lines used by readline
     var newlines = (rl_previous_line_buffer.match(/\n/g) || []).length;
     for (var i = 0; i < newlines; i++) {
-        write('\x1b[2K\x1b[A');
+        write('\x1b[2K');  // erase full line
+        write('\x1b[A');  // cursor up
     }
-    write('\x1b[2K\r');
+    write('\x1b[2K');  // erase full line
+    write('\r');  // cursor to beginning of line
+    write('\x1b[m');  // reset display mode attributes
 
     write(rl_prompt + rl_line_buffer);
 
     // position tty's cursor at readline's caret
     var d = rl_line_buffer.length - rl_point;
     if (d > 0) {
-        write('\x1b[' + d + 'D');
+        write('\x1b[' + d + 'D');  // cursor backward d times
     }
 
     code.innerHTML = tty2html();
