@@ -5,6 +5,19 @@ function cursor_backward(param) {
     }
 }
 
+function erase_display(param) {
+    param = parseInt(param) || 0;
+    if (param == 0) {
+        screen.splice(cursor_row+1);
+    } else if (param == 1) {
+        for (var i = 0; i < cursor_row; i++) {
+            screen[i].splice(0);
+        }
+    } else if (param == 2) {
+        screen = [[]];
+    }
+}
+
 function erase_line(param) {
     param = parseInt(param) || 0;
     var current_line = screen[cursor_row] || [];
@@ -22,5 +35,6 @@ function erase_line(param) {
 
 escape_sequences = {
     'D': cursor_backward,
+    'J': erase_display,
     'K': erase_line,
 }
