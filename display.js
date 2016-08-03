@@ -4,7 +4,7 @@ var code = document.querySelector('#code');
 var enableInput = true;
 
 var rl_previous_line_buffer = '';
-function update() {
+function rl_redisplay() {
     // reset all lines used by readline
     var newlines = (rl_previous_line_buffer.match(/\n/g) || []).length;
     for (var i = 0; i < newlines; i++) {
@@ -35,7 +35,7 @@ function rl_callback_handler_install(prompt, linefunc) {
     rl_prompt = prompt;
     rl_linefunc = linefunc;
     write(rl_prompt);
-    update();
+    rl_redisplay();
 }
 
 code.addEventListener('focus', function(event) {
@@ -52,12 +52,12 @@ code.addEventListener('keydown', function(event) {
 
     if (event.key == 'Control' && event.location == 2) {  // right control
         code.blur();
-        update();
+        rl_redisplay();
         event.stopPropagation();
     } else if (event.key == 'V' && event.ctrlKey) {  // Ctrl+Shift+V = pasting
     } else {
         if (rl_handle_event(event)) {
-            update();
+            rl_redisplay();
         }
         event.preventDefault();
     }
@@ -71,14 +71,14 @@ code.addEventListener('compositionstart', function(event) {
 
 code.addEventListener('compositionend', function(event) {
     rl_insert_text(event.data);
-    update();
+    rl_redisplay();
     enableInput = true;
     event.preventDefault();
 });
 
 code.addEventListener('paste', function(event) {
     rl_insert_text(event.clipboardData.getData("text/plain"));
-    update();
+    rl_redisplay();
     event.preventDefault();
 });
 
@@ -97,7 +97,7 @@ code.addEventListener('drop', function(event) {
         text = data.getData("text/plain");
     }
     rl_insert_text(text);
-    update();
+    rl_redisplay();
     event.preventDefault();
 });
 
