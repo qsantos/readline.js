@@ -3,6 +3,7 @@
 var code = document.querySelector('#code');
 var enableInput = true;
 
+var rl_previous_line_buffer = '';
 function update() {
     // reset all lines used by readline
     var newlines = (rl_previous_line_buffer.match(/\n/g) || []).length;
@@ -24,6 +25,8 @@ function update() {
 
     code.innerHTML = tty2html();
     code.scrollTop = code.scrollHeight;
+
+    rl_previous_line_buffer = rl_line_buffer;
 }
 
 var rl_prompt = "";
