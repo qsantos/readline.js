@@ -18,7 +18,7 @@ function rl_discard_argument() {
 /* Start a numeric argument with initial value KEY */
 function rl_digit_argument(count, key) {
     if (key == '-') {
-        rl_arg_sign = -1;
+        rl_arg_sign *= -1;
         return;
     }
     if (rl_explicit_arg) {
