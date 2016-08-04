@@ -4,18 +4,37 @@ var code = document.querySelector('#code');
 var enableInput = true;
 
 var rl_previous_line_buffer = '';
+var rl_previous_message_buffer = '';
 function rl_redisplay() {
     // reset all lines used by readline
+
+    // message buffer
+    if (rl_previous_message_buffer) {
+        write('\x1b[B');  // cursor down
+        write('\x1b[2K');  // erase full line
+        write('\x1b[A');  // cursor up
+    }
+
+    // line buffer
     var newlines = (rl_previous_line_buffer.match(/\n/g) || []).length;
     for (var i = 0; i < newlines; i++) {
         write('\x1b[2K');  // erase full line
         write('\x1b[A');  // cursor up
     }
     write('\x1b[2K');  // erase full line
+
+    // reset cursor
     write('\r');  // cursor to beginning of line
     write('\x1b[m');  // reset display mode attributes
 
+    // print prompt, line and message
     write(rl_prompt + rl_line_buffer);
+    if (rl_message_buffer) {
+        write('\x1b[s');  // save cursor position
+        write('\n');  // next line
+        write(rl_message_buffer);
+        write('\x1b[u');  // restore cursor position
+    }
 
     // position tty's cursor at readline's caret
     var d = rl_line_buffer.length - rl_point;
@@ -27,6 +46,7 @@ function rl_redisplay() {
     code.scrollTop = code.scrollHeight;
 
     rl_previous_line_buffer = rl_line_buffer;
+    rl_previous_message_buffer = rl_message_buffer;
 }
 
 var rl_prompt = "";

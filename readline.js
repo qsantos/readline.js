@@ -15,6 +15,9 @@
 /* Line buffer. */
 var rl_line_buffer = ''
 
+/* The buffer of messages (numeric argument, backward search) */
+var rl_message_buffer = '';
+
 /* The current offset in the current input line. */
 var rl_point = 0;
 
@@ -80,6 +83,12 @@ function rl_raw_insert(event, count) {
     } else {
         rl_insert(count, event.key);
     }
+}
+
+/* How to print things in the "echo-area".  The prompt is treated as a
+   mini-modeline. */
+function rl_message(message) {
+    rl_message_buffer = message;
 }
 
 var force_next_meta = false;
