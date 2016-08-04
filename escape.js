@@ -53,16 +53,12 @@ function cursor_backward(param) {
     }
 }
 
-var saved_cursor = {row: 0, col: 0};
-
-function save_cursor_position(_) {
-    saved_cursor.row = cursor.row;
-    saved_cursor.col = cursor.col;
+function save_cursor_state(_) {
+    copy(cursor, saved_cursor);
 }
 
-function restore_cursor_position(_) {
-    cursor.row = saved_cursor.row;
-    cursor.col = saved_cursor.col;
+function restore_cursor_state(_) {
+    copy(saved_cursor, cursor);
 }
 
 function erase_display(param) {
@@ -125,8 +121,8 @@ escape_sequences = {
     'B': cursor_down,
     'C': cursor_forward,
     'D': cursor_backward,
-    's': save_cursor_position,
-    'u': restore_cursor_position,
+    's': save_cursor_state,
+    'u': restore_cursor_state,
     'J': erase_display,
     'K': erase_line,
     'm': set_graphics_mode,

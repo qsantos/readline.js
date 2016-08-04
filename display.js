@@ -30,10 +30,11 @@ function rl_redisplay() {
     // print prompt, line and message
     write(rl_prompt + rl_line_buffer);
     if (rl_message_buffer) {
-        write('\x1b[s');  // save cursor position
+        write('\x1b[s');  // save cursor state
         write('\n');  // next line
+        write('\x1b[m');  // reset attributes
         write(rl_message_buffer);
-        write('\x1b[u');  // restore cursor position
+        write('\x1b[u');  // restore cursor state
     }
 
     // position tty's cursor at readline's caret
