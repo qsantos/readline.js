@@ -8,6 +8,7 @@ function rl_discard_argument() {
     rl_numeric_arg = 1;
     rl_explicit_arg = false;
     rl_arg_sign = 1;
+    rl_message('');  // empty message line
 }
 
 
@@ -19,15 +20,24 @@ function rl_discard_argument() {
 function rl_digit_argument(count, key) {
     if (key == '-') {
         rl_arg_sign *= -1;
-        return;
-    }
-    if (rl_explicit_arg) {
+    } else if (rl_explicit_arg) {
         rl_numeric_arg *= 10;
         rl_numeric_arg += parseInt(key);
     } else {
         rl_numeric_arg = parseInt(key);
+        rl_explicit_arg = true;
     }
-    rl_explicit_arg = true;
+
+    if (rl_explicit_arg) {
+        // just show the current value followed by an underscore
+        rl_message('(arg: ' + (rl_arg_sign * rl_numeric_arg) + '_)');
+    } else if (rl_arg_sign < 0) {
+        // show -1 with '1' underlined
+        rl_message('(arg: -\x1b[4m1\x1b[m)');
+    } else {
+        // show 1 with '1' underlined
+        rl_message('(arg: \x1b[4m1\x1b[m)');
+    }
 }
 //extern int rl_universal_argument PARAMS((int, int));
 
