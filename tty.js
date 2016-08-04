@@ -3,8 +3,36 @@
 /* The screen is a list of lines; each line is a list of character with their
  * associated metadata */
 var screen = [[]];
-var cursor_row = 0;
-var cursor_col = 0;
+
+function copy(object, dst) {
+    var dst = dst !== undefined ? dst : {};
+    for (var i in object) {
+        dst[i] = object[i];
+    }
+    return dst;
+}
+
+var cursor = {
+    row: 0,
+    col: 0,
+};
+
+var null_attributes = {
+    foreground: null,
+    background: null,
+    bold: 0,
+    dim: 0,
+    underline: 0,
+    blinking: 0,
+    reverse: 0,
+    invisible: 0,
+};
+
+function reset_attributes() {
+    copy(null_attributes, cursor);
+}
+reset_attributes();
+var saved_cursor = copy(cursor);
 
 /* An empty char to end at the end of the current line, to show the cursor */
 var empty_char = {
@@ -16,50 +44,50 @@ var empty_char = {
 function write_char(c) {
     // collect active classes depending on attributes
     var classes = [];
-    if (reverse) {
-        var tmp = foreground || 9;
-        foreground = background || 0;
-        background = tmp;
-        classes.push('tty_foreground_' + foreground);
-        classes.push('tty_background_' + background);
+    if (cursor.reverse) {
+        var tmp = cursor.foreground || 9;
+        cursor.foreground = cursor.background || 0;
+        cursor.background = tmp;
+        classes.push('tty_foreground_' + cursor.foreground);
+        classes.push('tty_background_' + cursor.background);
     } else {
-        if (foreground != null) { classes.push('tty_foreground_' + foreground); }
-        if (background != null) { classes.push('tty_background_' + background); }
+        if (cursor.foreground != null) { classes.push('tty_foreground_' + cursor.foreground); }
+        if (cursor.background != null) { classes.push('tty_background_' + cursor.background); }
     }
-    if (bold)      { classes.push('tty_bold'); }
-    if (dim)       { classes.push('tty_dim'); }
-    if (underline) { classes.push('tty_underscore'); }
-    if (blinking)  { classes.push('tty_blinking'); }
-    if (invisible) { classes.push('tty_invisible'); }
+    if (cursor.bold)      { classes.push('tty_bold'); }
+    if (cursor.dim)       { classes.push('tty_dim'); }
+    if (cursor.underline) { classes.push('tty_underscore'); }
+    if (cursor.blinking)  { classes.push('tty_blinking'); }
+    if (cursor.invisible) { classes.push('tty_invisible'); }
 
     // ensure the grid cell exists
-    while (cursor_row >= screen.length) {
+    while (cursor.row >= screen.length) {
         screen.push([]);
     }
-    var current_line = screen[cursor_row];
-    while (cursor_col >= current_line.length) {
+    var current_line = screen[cursor.row];
+    while (cursor.col >= current_line.length) {
         current_line.push(empty_char);
     }
 
     // add character
-    current_line[cursor_col] = {
+    current_line[cursor.col] = {
         char: c,
         classes: classes,
     };
-    cursor_col++;
+    cursor.col++;
 }
 
 function write(text) {
     for (var i = 0; i < text.length; i++) {
         var c = text.charAt(i);
         if (c == '\n') {
-            cursor_col = 0;
-            cursor_row++;
-            if (cursor_row >= screen.length) {
+            cursor.col = 0;
+            cursor.row++;
+            if (cursor.row >= screen.length) {
                 screen.push([]);
             }
         } else if (c == '\r') {
-            cursor_col = 0;
+            cursor.col = 0;
         // escape sequences
         } else if (c == '\x1b' && text.charAt(i+1) == '[') {
             // extract the parameters and the action
@@ -97,7 +125,7 @@ function tty2html() {
 
             // set up the decoration for the current character
             var classes = cell.classes;
-            if (row == cursor_row && col == cursor_col) {
+            if (row == cursor.row && col == cursor.col) {
                 classes = classes.concat(['tty_cursor']);
             }
             if (classes.length != 0) {

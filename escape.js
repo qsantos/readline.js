@@ -2,75 +2,75 @@ function cursor_position(param) {
     param = param.split(';');
 
     // set row
-    cursor_row = (parseInt(param[0]) || 1)  - 1;
+    cursor.row = (parseInt(param[0]) || 1)  - 1;
     // clamp
-    if (cursor_row < 0) {
-        cursor_row = 0;
+    if (cursor.row < 0) {
+        cursor.row = 0;
     }
-    if (cursor_row >= screen.length) {
-        cursor_row = screen.length - 1;
+    if (cursor.row >= screen.length) {
+        cursor.row = screen.length - 1;
     }
 
-    var current_line = screen[cursor_row];
+    var current_line = screen[cursor.row];
 
     // set column
-    cursor_col = (parseInt(param[1]) || 1) - 1;
+    cursor.col = (parseInt(param[1]) || 1) - 1;
     // clamp
-    if (cursor_col < 0) {
-        cursor_col = 0;
+    if (cursor.col < 0) {
+        cursor.col = 0;
     }
-    if (cursor_col > current_line.length) {
-        cursor_col = current_line.length - 1;
+    if (cursor.col > current_line.length) {
+        cursor.col = current_line.length - 1;
     }
 }
 
 function cursor_up(param) {
-    cursor_row -= parseInt(param) || 1;
-    if (cursor_row < 0) {
-        cursor_row = 0;
+    cursor.row -= parseInt(param) || 1;
+    if (cursor.row < 0) {
+        cursor.row = 0;
     }
 }
 
 function cursor_down(param) {
-    cursor_row += parseInt(param) || 1;
-    if (cursor_row >= screen.length) {
-        cursor_row = screen.length - 1;
+    cursor.row += parseInt(param) || 1;
+    if (cursor.row >= screen.length) {
+        cursor.row = screen.length - 1;
     }
 }
 
 function cursor_forward(param) {
-    var current_line = screen[cursor_row];
-    cursor_col += parseInt(param) || 1;
-    if (cursor_col >= current_line.length) {
-        cursor_col = current_line.length - 1;
+    var current_line = screen[cursor.row];
+    cursor.col += parseInt(param) || 1;
+    if (cursor.col >= current_line.length) {
+        cursor.col = current_line.length - 1;
     }
 }
 
 function cursor_backward(param) {
-    cursor_col -= parseInt(param) || 1;
-    if (cursor_col < 0) {
-        cursor_col = 0;
+    cursor.col -= parseInt(param) || 1;
+    if (cursor.col < 0) {
+        cursor.col = 0;
     }
 }
 
 var saved_cursor = {row: 0, col: 0};
 
 function save_cursor_position(_) {
-    saved_cursor.row = cursor_row;
-    saved_cursor.col = cursor_col;
+    saved_cursor.row = cursor.row;
+    saved_cursor.col = cursor.col;
 }
 
 function restore_cursor_position(_) {
-    cursor_row = saved_cursor.row;
-    cursor_col = saved_cursor.col;
+    cursor.row = saved_cursor.row;
+    cursor.col = saved_cursor.col;
 }
 
 function erase_display(param) {
     param = parseInt(param) || 0;
     if (param == 0) {
-        screen.splice(cursor_row+1);
+        screen.splice(cursor.row+1);
     } else if (param == 1) {
-        for (var i = 0; i < cursor_row; i++) {
+        for (var i = 0; i < cursor.row; i++) {
             screen[i].splice(0);
         }
     } else if (param == 2) {
@@ -80,12 +80,12 @@ function erase_display(param) {
 
 function erase_line(param) {
     param = parseInt(param) || 0;
-    var current_line = screen[cursor_row] || [];
+    var current_line = screen[cursor.row] || [];
     if (param == 0) {  // clear line from cursor right
-        current_line.splice(cursor_col);
+        current_line.splice(cursor.col);
     } else if (param == 1) {  // clear line from cursor left
-        var stop = cursor_col;
-        for (cursor_col = 0; cursor_col <= stop; ) {
+        var stop = cursor.col;
+        for (cursor.col = 0; cursor.col <= stop; ) {
             write_char(' ');
         }
     } else if (param == 2) {  // clear entire line
@@ -94,12 +94,6 @@ function erase_line(param) {
 }
 
 // terminal attributes
-var foreground, background;
-var bold, dim, underline, blinking, reverse, invisible;
-function reset_attributes() {
-    foreground = background = null;
-    bold = dim = underline = blinking = reverse = invisible = false;
-}
 function set_graphics_mode(attributes) {
     if (!attributes) {
         reset_attributes();
@@ -112,15 +106,15 @@ function set_graphics_mode(attributes) {
         if (false);
         else if (attribute == '') { reset_attributes(); }
         else if (code == 0) { reset_attributes(); }
-        else if (code == 1) { bold = true; }
-        else if (code == 2) { dim = true; }
-        else if (code == 4) { underline = true; }
-        else if (code == 5) { blinking = true; }
-        else if (code == 7) { reverse = true; }
-        else if (code == 8) { invisible = true; }
+        else if (code == 1) { cursor.bold = true; }
+        else if (code == 2) { cursor.dim = true; }
+        else if (code == 4) { cursor.underline = true; }
+        else if (code == 5) { cursor.blinking = true; }
+        else if (code == 7) { cursor.reverse = true; }
+        else if (code == 8) { cursor.invisible = true; }
         else if (code < 30) { }
-        else if (code < 40) { foreground = code - 30; }
-        else if (code < 48) { background = code - 40; }
+        else if (code < 40) { cursor.foreground = code - 30; }
+        else if (code < 48) { cursor.background = code - 40; }
     });
 }
 
