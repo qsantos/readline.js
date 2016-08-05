@@ -60,7 +60,7 @@ function handle_meta_key(key) {
         '%': rl_maching_paren,  // non-standard
         //'&': rl_tilde_expand,
         "'": rl_quote_full,  // non-standard (from zsh)
-        //'*': rl_insert_completions,
+        '*': rl_insert_completions,
         '-': rl_digit_argument,
         '.': rl_yank_last_arg,
         '0': rl_digit_argument,

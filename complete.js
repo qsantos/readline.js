@@ -117,8 +117,18 @@ function rl_complete(count, key) {
     }
 }
 
+/* Insert all of the possible completions. */
+function rl_insert_completions(count, key) {
+    // find matches
+    var start = _rl_find_completion_word();
+    var text = rl_line_buffer.substring(start, rl_point);
+    var matches = rl_completion_matches(text, rl_completion_entry_function);
+
+    // insert them
+    rl_replace_text(start, rl_point, matches.join(' '));
+}
+
 //extern int rl_possible_completions PARAMS((int, int));
-//extern int rl_insert_completions PARAMS((int, int));
 //extern int rl_old_menu_complete PARAMS((int, int));
 //extern int rl_menu_complete PARAMS((int, int));
 //extern int rl_backward_menu_complete PARAMS((int, int));
