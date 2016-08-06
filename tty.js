@@ -159,31 +159,42 @@ function tty2html() {
 
 function tty2text() {
     var ret = '';
+    var current_index = 0;
     for (var row = 0; row < screen.length; row++) {
-        var line = screen[row];
+        var line = screen[row].concat(empty_char);
         for (var col = 0; col < line.length; col++) {
             var cell = line[col];
             var c = cell.char;
 
+            if (row == cursor.row && col == cursor.col) {
+                cursor_index = current_index;
+            }
+
             if (c < ' ') {  // non-printable characters
                 var name = String.fromCharCode(64 + c.charCodeAt());
                 ret += '^' + name;
+                current_index += 2;
             } else if (c == '\x7f') {  // delete
                 ret += '^?';
+                current_index += 2;
             } else {
                 ret += c;
+                current_index += 1;
             }
         }
         if (row < screen.length - 1) {
             ret += '\n';
         }
     }
-    return ret;
+    return [ret, cursor_index];
 }
 
 function tty_redisplay() {
     if (tty.tagName == 'TEXTAREA') {
-        tty.value = tty2text();
+        ret_cursor = tty2text();
+        tty.value = ret_cursor[0];
+        var index = ret_cursor[1];
+        tty.setSelectionRange(index, index+1);
     } else {
         tty.innerHTML = tty2html();
     }

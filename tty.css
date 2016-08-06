@@ -8,7 +8,10 @@
 }
 .escape { color: #55f; }
 .tty_cursor { border:1px solid green; }
+/* Do not merge */
 #tty:focus .tty_cursor { background-color:green; border:none; }
+#tty::selection        { background-color:green; border:none; }
+#tty::-moz-selection   { background-color:green; border:none; }
 
 .tty_bold { font-weight: bold; }
 .tty_underscore { text-decoration: underline; }
