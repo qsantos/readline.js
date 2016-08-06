@@ -4,14 +4,17 @@
 /* Utils for word completion. */
 /******************************/
 
-/* Pointer to the generator function for completion_matches. */
-var rl_completion_entry_function = function(text, state) {
+/* Default entry function. */
+function rl_completion_default_entry_function(text, state) {
     // simple example
     return [
         "cd", "echo", "emacs", "firefox", "htop", "ls", "more", "mount",
         "python", "vim",
     ][state];
 }
+
+/* Pointer to the generator function for completion_matches. */
+var rl_completion_entry_function = rl_completion_default_entry_function;
 
 /* The list of characters that signal a break between words for
    rl_complete_internal. */

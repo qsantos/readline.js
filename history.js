@@ -15,6 +15,16 @@ if (rl_history) {
 /* The current location of the interactive history pointer. */
 var rl_history_index = rl_history.length;
 
+function read_history(filename) {
+    filename = filename !== undefined ? filename : '~/.history';
+    rl_history = JSON.parse(rl_history);
+}
+
+function write_history(filename) {
+    filename = filename !== undefined ? filename : '~/.history';
+    localStorage.setItem('~/.history', JSON.stringify(rl_history));
+}
+
 /* Add a line to the history. */
 function rl_history_append() {
     if (rl_line_buffer && rl_line_buffer != rl_history[rl_history.length-1]) {
