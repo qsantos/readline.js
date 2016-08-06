@@ -61,7 +61,6 @@ function rl_raw_insert(event, count) {
         return;
     }
 
-    var text;
     if (event.altKey && event.ctrlKey) {
         // technically, \x1b/escape/meta/alt is inserted
         // and the Ctrl+key combination is executed;

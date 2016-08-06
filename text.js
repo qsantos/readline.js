@@ -19,7 +19,6 @@ function rl_insert_text(text, count) {
     rl_line_buffer += after;
 }
 
-
 /* Delete the string between FROM and TO.  FROM is inclusive, TO is not.
    Returns the number of characters deleted. */
 function rl_delete_text(from, to) {
