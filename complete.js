@@ -131,7 +131,7 @@ var _rl_completion_matches;
    rl_completion_matches ()). */
 function rl_complete(count, key) {
     if (_rl_last_func != rl_complete) {
-        _rl_completion_state = -1;
+        _rl_completion_state = -2;
         _rl_completion_start = _rl_find_completion_word();
         var text = rl_line_buffer.substring(_rl_completion_start, rl_point);
         _rl_completion_matches = (
@@ -146,9 +146,13 @@ function rl_complete(count, key) {
 
     // choose the substitution
     var substitution;
-    if (_rl_completion_state == -1) {
+    if (_rl_completion_state == -2) {  // partial completion
         substitution = compute_lcd_of_matches(_rl_completion_matches);
-    } else {
+    } else if (_rl_completion_state == -1) {  // list of matches
+        display_matches(_rl_completion_matches);
+        _rl_completion_state++;
+        return;
+    } else {  // cycles through matches
         substitution = _rl_completion_matches[_rl_completion_state];
     }
 
