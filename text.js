@@ -333,7 +333,38 @@ function rl_change_case(count, op) {
 /* Bindable commands for transposing characters and words. */
 /***********************************************************/
 
-//extern int rl_transpose_words PARAMS((int, int));
+/* Transpose the words at point.  If point is at the end of the line,
+   transpose the two words before point. */
+function rl_transpose_words(count, key) {
+    var orig_point = rl_point;
+
+    /* Find the two words. */
+    rl_forward_word(count, key);  var w2_end = rl_point;
+    rl_backward_word(1, key);     var w2_beg = rl_point;
+    rl_backward_word(count, key); var w1_beg = rl_point;
+    rl_forward_word(1, key);      var w1_end = rl_point;
+
+    /* Do some check to make sure that there really are two words. */
+    if ((w1_beg == w2_beg) || (w2_beg < w1_end)) {
+        rl_point = orig_point;
+        return;
+    }
+
+    /* Get the text of the words. */
+    word1 = rl_line_buffer.substring(w1_beg, w1_end);
+    word2 = rl_line_buffer.substring(w2_beg, w2_end);
+
+    /* Do the stuff at word2 first, so that we don't have to worry
+     about word1 moving. */
+    rl_begin_undo_group ();
+    rl_replace_text(w2_beg, w2_end, word1);
+    rl_replace_text(w1_beg, w1_end, word2);
+    rl_end_undo_group ();
+
+    /* This is exactly correct since the text before this point has not
+     changed in length. */
+    rl_point = w2_end;
+}
 
 /* Transpose the characters at point.  If point is at the end of the line,
    then transpose the characters before point. */

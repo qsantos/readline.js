@@ -87,7 +87,7 @@ function handle_meta_key(key) {
         'n': rl_noninc_forward_search,  // zsh style
         'p': rl_noninc_reverse_search,  // zsh style
         'r': rl_revert_line,
-        //'t': rl_transpose_words,
+        't': rl_transpose_words,
         'u': rl_upcase_word,
         'y': rl_yank_pop,
         //'~': rl_tilde_expand,
