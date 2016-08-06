@@ -148,7 +148,10 @@ function rl_backward_word(count, key) {
    the prompt and the current input line.  Given a numeric arg, redraw only
    the current line. */
 function rl_clear_screen(count, key) {
-    write('\x1b[2J\x1b[H');
+    write('\x1b[2J');  // clear screen
+    write('\x1b[H');  // reset cursor position
+    write('\x1b[m');  // reset cursor attributes
+    write(rl_prompt + rl_line_buffer);
 }
 //extern int rl_skip_csi_sequence PARAMS((int, int));
 //extern int rl_arrow_keys PARAMS((int, int));

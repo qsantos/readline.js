@@ -3,9 +3,20 @@
 var code = document.querySelector('#code');
 var enableInput = true;
 
+var rl_previous_point;
 var rl_previous_line_buffer = '';
 var rl_previous_message_buffer = '';
 function rl_redisplay() {
+    // check whether we really need to redraw
+    if (
+        rl_point == rl_previous_point &&
+        rl_line_buffer == rl_previous_line_buffer &&
+        rl_message_buffer == rl_previous_message_buffer
+    ) {
+        tty_redisplay();
+        return;
+    }
+
     // reset all lines used by readline
 
     // message buffer
@@ -43,9 +54,9 @@ function rl_redisplay() {
         write('\x1b[' + d + 'D');  // cursor backward d times
     }
 
-    code.innerHTML = tty2html();
-    code.scrollTop = code.scrollHeight;
+    tty_redisplay();
 
+    rl_previous_point = rl_point;
     rl_previous_line_buffer = rl_line_buffer;
     rl_previous_message_buffer = rl_message_buffer;
 }
