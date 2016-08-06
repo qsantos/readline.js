@@ -22,6 +22,12 @@ var rl_completion_entry_function = function(text, state) {
 // CPython version, much more complete
 var rl_completer_word_break_characters = ' \t\n`~!@#$%^&*()-=+[{]}\\|;:\'",<>/?';
 
+/* Up to this many items will be displayed in response to a
+   possible-completions call.  After that, we ask the user if
+   she is sure she wants to see them all.  A negative value means
+   don't ask. */
+var rl_completion_query_items = 100;
+
 /* Find the bounds of the current word for completion purposes, and leave
    rl_point set to the beginning of the word. */
 function _rl_find_completion_word() {
@@ -71,6 +77,44 @@ function rl_completion_matches(text, entry_function) {
         i++;
     }
     return ret;
+}
+
+/* Display MATCHES.  We also check
+   that the list of matches doesn't exceed the user-settable threshold,
+   and ask the user if he wants to see the list if there are more matches
+   than RL_COMPLETION_QUERY_ITEMS. */
+function display_matches(matches) {
+    rl_redisplay();  // avoid a redisplay from clearing out the confirmation
+
+    // temporarily go to next line
+    write('\x1b[s');  // save cursor state
+    write('\n');  // next line
+    write('\x1b[2K');  // clear line
+
+    // if few matches, just print them
+    if (rl_completion_query_items <= 0 || matches.length < rl_completion_query_items) {
+        write(matches.join(' '));
+        write('\x1b[u');  // restore cursor state
+        return;
+    }
+
+    // demand confirmation before printing many matches
+    write('Display all ' + matches.length + ' possibilities? (y or n)');
+    function yesno(key) {
+        if (key == 'y') {
+            write('\x1b[2K');  // clear line
+            write('\r');  // beginning of line
+            write(matches.join(' '));
+            write('\x1b[u');  // restore cursor state
+        } else if (key == 'n') {
+            write('\x1b[2K');  // clear line
+            write('\x1b[u');  // restore cursor state
+        } else {
+            // loop until answer is either 'y' or 'n'
+            rl_read_key(yesno);
+        }
+    }
+    rl_read_key(yesno);
 }
 
 // save information between completions for rotating between the matches
@@ -128,7 +172,15 @@ function rl_insert_completions(count, key) {
     rl_replace_text(start, rl_point, matches.join(' '));
 }
 
-//extern int rl_possible_completions PARAMS((int, int));
+function rl_possible_completions(count, key) {
+    // find matches
+    var start = _rl_find_completion_word();
+    var text = rl_line_buffer.substring(start, rl_point);
+    var matches = rl_completion_matches(text, rl_completion_entry_function);
+
+    display_matches(matches);
+}
+
 //extern int rl_old_menu_complete PARAMS((int, int));
 //extern int rl_menu_complete PARAMS((int, int));
 //extern int rl_backward_menu_complete PARAMS((int, int));
