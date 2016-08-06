@@ -1,4 +1,5 @@
 #tty {
+    display: block;
     width:880px; height:530px; margin:0 auto;
 	color:white; background-color:black;
 	border:3px solid #e8e8e8;

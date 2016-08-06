@@ -157,7 +157,35 @@ function tty2html() {
     return ret;
 }
 
+function tty2text() {
+    var ret = '';
+    for (var row = 0; row < screen.length; row++) {
+        var line = screen[row];
+        for (var col = 0; col < line.length; col++) {
+            var cell = line[col];
+            var c = cell.char;
+
+            if (c < ' ') {  // non-printable characters
+                var name = String.fromCharCode(64 + c.charCodeAt());
+                ret += '^' + name;
+            } else if (c == '\x7f') {  // delete
+                ret += '^?';
+            } else {
+                ret += c;
+            }
+        }
+        if (row < screen.length - 1) {
+            ret += '\n';
+        }
+    }
+    return ret;
+}
+
 function tty_redisplay() {
-    tty.innerHTML = tty2html();
+    if (tty.tagName == 'TEXTAREA') {
+        tty.value = tty2text();
+    } else {
+        tty.innerHTML = tty2html();
+    }
     tty.scrollTop = tty.scrollHeight;
 }
