@@ -84,8 +84,8 @@ function handle_meta_key(key) {
         'd': rl_kill_word,
         'f': rl_forward_word,
         'l': rl_downcase_word,
-        //'n': rl_noninc_forward_search,
-        //'p': rl_noninc_reverse_search,
+        'n': rl_noninc_forward_search,  // zsh style
+        'p': rl_noninc_reverse_search,  // zsh style
         'r': rl_revert_line,
         //'t': rl_transpose_words,
         'u': rl_upcase_word,
