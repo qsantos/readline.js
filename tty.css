@@ -1,4 +1,4 @@
-#code {
+#tty {
     width:880px; height:530px; margin:0 auto;
 	color:white; background-color:black;
 	border:3px solid #e8e8e8;
@@ -7,7 +7,7 @@
 }
 .escape { color: #55f; }
 .tty_cursor { border:1px solid green; }
-#code:focus .tty_cursor { background-color:green; border:none; }
+#tty:focus .tty_cursor { background-color:green; border:none; }
 
 .tty_bold { font-weight: bold; }
 .tty_underscore { text-decoration: underline; }

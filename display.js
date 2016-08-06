@@ -1,6 +1,6 @@
 /* Rough equivalent of display.c */
 
-var code = document.querySelector('#code');
+var tty = document.querySelector('#tty');
 var enableInput = true;
 
 var rl_previous_point;
@@ -70,20 +70,20 @@ function rl_callback_handler_install(prompt, linefunc) {
     rl_redisplay();
 }
 
-code.addEventListener('focus', function(event) {
+tty.addEventListener('focus', function(event) {
     document.querySelector('#unfocus_help').style.visibility = 'visible';
 });
 
-code.addEventListener('blur', function(event) {
+tty.addEventListener('blur', function(event) {
     document.querySelector('#unfocus_help').style.visibility = 'hidden';
 });
 
-code.addEventListener('keydown', function(event) {
+tty.addEventListener('keydown', function(event) {
     if (!enableInput)
         return;
 
     if (event.key == 'Control' && event.location == 2) {  // right control
-        code.blur();
+        tty.blur();
         rl_redisplay();
         event.stopPropagation();
     } else if (event.key == 'V' && event.ctrlKey) {  // Ctrl+Shift+V = pasting
@@ -96,25 +96,25 @@ code.addEventListener('keydown', function(event) {
 });
 
 // https://github.com/liftoff/GateOne/issues/188
-code.addEventListener('compositionstart', function(event) {
+tty.addEventListener('compositionstart', function(event) {
     enableInput = false;
     event.preventDefault();
 });
 
-code.addEventListener('compositionend', function(event) {
+tty.addEventListener('compositionend', function(event) {
     rl_insert_text(event.data);
     rl_redisplay();
     enableInput = true;
     event.preventDefault();
 });
 
-code.addEventListener('paste', function(event) {
+tty.addEventListener('paste', function(event) {
     rl_insert_text(event.clipboardData.getData("text/plain"));
     rl_redisplay();
     event.preventDefault();
 });
 
-code.addEventListener('drop', function(event) {
+tty.addEventListener('drop', function(event) {
     var data = event.dataTransfer;
     var text;
     if (data.types.contains("text/x-moz-url")) { // file
@@ -135,4 +135,4 @@ code.addEventListener('drop', function(event) {
 
 var PS1 = '\x1b[32m$\x1b[m ';
 rl_callback_handler_install(PS1, write);
-code.focus();
+tty.focus();

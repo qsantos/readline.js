@@ -158,6 +158,6 @@ function tty2html() {
 }
 
 function tty_redisplay() {
-    code.innerHTML = tty2html();
-    code.scrollTop = code.scrollHeight;
+    tty.innerHTML = tty2html();
+    tty.scrollTop = tty.scrollHeight;
 }
