@@ -1,0 +1,43 @@
+#tty {
+    display: block;
+    width:880px; height:530px; margin:0 auto;
+	color:white; background-color:black;
+	border:3px solid #e8e8e8;
+	resize:both; overflow:scroll;
+	font-family:monospace; word-wrap:break-word;
+}
+.escape { color: #55f; }
+.tty_cursor { border:1px solid green; }
+/* Do not merge */
+#tty:focus .tty_cursor { background-color:green; border:none; }
+#tty::selection        { background-color:green; border:none; }
+#tty::-moz-selection   { background-color:green; border:none; }
+
+.tty_bold { font-weight: bold; }
+.tty_underscore { text-decoration: underline; }
+.tty_dim { opacity: .5; }
+.tty_blinking { animation: 1s steps(1) infinite blinker; }
+@keyframes blinker {  50% { opacity: 0; } }
+.tty_invisible { color: transparent; }
+
+.tty_foreground_0 { color: #000; }
+.tty_foreground_1 { color: #a00; }
+.tty_foreground_2 { color: #0a0; }
+.tty_foreground_3 { color: #a50; }
+.tty_foreground_4 { color: #00a; }
+.tty_foreground_5 { color: #a0a; }
+.tty_foreground_6 { color: #0aa; }
+.tty_foreground_7 { color: #aaa; }
+.tty_foreground_8 { color: #aaa; }
+.tty_foreground_9 { color: #fff; }
+
+.tty_background_0 { background-color: #000; }
+.tty_background_1 { background-color: #a00; }
+.tty_background_2 { background-color: #0a0; }
+.tty_background_3 { background-color: #a50; }
+.tty_background_4 { background-color: #00a; }
+.tty_background_5 { background-color: #a0a; }
+.tty_background_6 { background-color: #0aa; }
+.tty_background_7 { background-color: #aaa; }
+.tty_background_8 { background-color: #aaa; }
+.tty_background_9 { background-color: #fff; }
