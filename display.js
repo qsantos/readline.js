@@ -89,12 +89,34 @@ tty.addEventListener('keydown', function(event) {
         rl_redisplay();
         event.stopPropagation();
     } else if (event.key == 'V' && event.ctrlKey) {  // Ctrl+Shift+V = pasting
+    } else if (!event.ctrlKey && !event.altKey && event.key.length == 1) {
+        // on Firefox, compositionstart is preceded by the keydown of the first
+        // typed character; to prevent this, we delay the handling of simple
+        // printable characters to keypress, which is not fired before a
+        // composititonstart
     } else {
         if (rl_handle_event(event)) {
             rl_redisplay();
         }
         event.preventDefault();
     }
+});
+
+// handle simple printable characters
+tty.addEventListener('keypress', function(event) {
+    if (isComposing) {
+        return;
+    }
+
+    // Ctrl+Shift+V = pasting
+    if (event.key == 'V' && event.ctrlKey) {
+        return;
+    }
+
+    if (rl_handle_event(event)) {
+        rl_redisplay();
+    }
+    event.preventDefault();
 });
 
 // https://github.com/liftoff/GateOne/issues/188
