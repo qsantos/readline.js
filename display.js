@@ -1,7 +1,8 @@
 /* Rough equivalent of display.c */
 
 var tty = document.querySelector('#tty');
-var enableInput = true;
+// https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/isComposing
+var isComposing = false;
 
 var rl_previous_point;
 var rl_previous_line_buffer = '';
@@ -79,8 +80,9 @@ tty.addEventListener('blur', function(event) {
 });
 
 tty.addEventListener('keydown', function(event) {
-    if (!enableInput)
+    if (isComposing) {
         return;
+    }
 
     if (event.key == 'Control' && event.location == 2) {  // right control
         tty.blur();
@@ -97,14 +99,15 @@ tty.addEventListener('keydown', function(event) {
 
 // https://github.com/liftoff/GateOne/issues/188
 tty.addEventListener('compositionstart', function(event) {
-    enableInput = false;
+    isComposing = true;
+    rl_redisplay();
     event.preventDefault();
 });
 
 tty.addEventListener('compositionend', function(event) {
     rl_insert_text(event.data);
     rl_redisplay();
-    enableInput = true;
+    isComposing = false;
     event.preventDefault();
 });
 
