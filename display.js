@@ -94,10 +94,10 @@ tty.addEventListener('keydown', function(event) {
         // typed character; to prevent this, we delay the handling of simple
         // printable characters to keypress, which is not fired before a
         // composititonstart
-    } else {
-        if (rl_handle_event(event)) {
-            rl_redisplay();
-        }
+    } else if (rl_handle_event(event)) {
+        rl_redisplay();
+        // on Chromium, catching all key presses prevents compositions; thus,
+        // we only catch key presses that are actually used by readline
         event.preventDefault();
     }
 });
