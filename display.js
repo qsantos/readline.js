@@ -127,10 +127,14 @@ tty.addEventListener('compositionstart', function(event) {
 });
 
 tty.addEventListener('compositionend', function(event) {
-    rl_insert_text(event.data);
-    rl_redisplay();
     isComposing = false;
     event.preventDefault();
+
+    rl_insert_text(event.data);
+    // on Chromium, the insertion of the composition happens *after*
+    // compositionend; to avoid it from being inserted regardless, we postpone
+    // the refresh of the screen until this has taken place, using a 0 ms delay
+    setTimeout(rl_redisplay, 0);
 });
 
 tty.addEventListener('paste', function(event) {
