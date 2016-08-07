@@ -5,12 +5,14 @@ var tty = document.querySelector('#tty');
 var isComposing = false;
 
 var rl_previous_point;
+var rl_previous_prompt;
 var rl_previous_line_buffer = '';
 var rl_previous_message_buffer = '';
 function rl_redisplay() {
     // check whether we really need to redraw
     if (
         rl_point == rl_previous_point &&
+        rl_prompt == rl_previous_prompt &&
         rl_line_buffer == rl_previous_line_buffer &&
         rl_message_buffer == rl_previous_message_buffer
     ) {
@@ -58,6 +60,7 @@ function rl_redisplay() {
     tty_redisplay();
 
     rl_previous_point = rl_point;
+    rl_previous_prompt = rl_prompt;
     rl_previous_line_buffer = rl_line_buffer;
     rl_previous_message_buffer = rl_message_buffer;
 }
@@ -67,7 +70,6 @@ var rl_linefunc;
 function rl_callback_handler_install(prompt, linefunc) {
     rl_prompt = prompt;
     rl_linefunc = linefunc;
-    write(rl_prompt);
     rl_redisplay();
 }
 

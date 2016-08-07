@@ -194,7 +194,6 @@ function rl_newline(count, key) {
     rl_point = 0;
     rl_mark = 0;
     _rl_undo_list = [];
-    write(rl_prompt);
 }
 
 //extern int rl_do_lowercase_version PARAMS((int, int));
