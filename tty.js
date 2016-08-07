@@ -191,12 +191,26 @@ function tty2text() {
 
 function tty_redisplay() {
     if (tty.tagName == 'TEXTAREA') {
+        // fill
         ret_cursor = tty2text();
         tty.value = ret_cursor[0];
+
+        // position native caret
         var index = ret_cursor[1];
         tty.setSelectionRange(index, index+1);
     } else {
+        // fill
         tty.innerHTML = tty2html();
+
+        // position native caret
+        if (tty.matches(':focus')) {  // if focused
+            var range = document.createRange();
+            range.setStart(document.querySelector('.tty_cursor'), 0);
+            range.collapse(true);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
     }
     tty.scrollTop = tty.scrollHeight;
 }
