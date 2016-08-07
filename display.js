@@ -130,7 +130,21 @@ tty.addEventListener('compositionend', function(event) {
     isComposing = false;
     event.preventDefault();
 
-    rl_insert_text(event.data);
+    if (!event.data) {
+        return;
+    }
+
+    var count = rl_numeric_arg * rl_arg_sign;
+    count = Math.min(count, 1000000);
+
+    rl_insert_text(event.data, count);
+
+    _rl_last_func = null;
+    if (_rl_last_command_was_kill > 0) {
+        _rl_last_command_was_kill--;
+    }
+    rl_discard_argument();
+
     // on Chromium, the insertion of the composition happens *after*
     // compositionend; to avoid it from being inserted regardless, we postpone
     // the refresh of the screen until this has taken place, using a 0 ms delay
