@@ -41,15 +41,11 @@ function rl_delete_text(from, to) {
 /* Replace the contents of the line buffer between START and END with
    TEXT.  The operation is undoable. */
 function rl_replace_text(start, end, text) {
-    var orig_point = rl_point;
-
     rl_begin_undo_group();
     rl_delete_text(start, end);
     rl_point = start;
     rl_insert_text(text);
     rl_end_undo_group();
-
-    rl_point = orig_point;
 }
 
 
