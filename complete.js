@@ -34,10 +34,10 @@ var rl_completion_query_items = 100;
 /* Find the bounds of the current word for completion purposes, and leave
    rl_point set to the beginning of the word. */
 function _rl_find_completion_word() {
-    for (var i = rl_point-1; i-- > 0; ) {
+    for (var i = rl_point; i-- > 0; ) {
         var c = rl_line_buffer.charAt(i);
         if (rl_completer_word_break_characters.indexOf(c) >= 0) {
-            return i;
+            return i+1;
         }
     }
     return 0;
