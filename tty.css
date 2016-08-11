@@ -1,10 +1,11 @@
 #tty {
     display: block;
-    width:880px; height:530px; margin:0 auto;
-	color:white; background-color:black;
-	border:3px solid #e8e8e8;
-	resize:both; overflow:scroll;
-	font-family:monospace; word-wrap:break-word;
+    line-height: 1.1em;
+    width:83ch; height:30em; margin:0 auto;
+    color:white; background-color:black;
+    border:3px solid #e8e8e8;
+    resize:both; overflow:scroll;
+    font-family:monospace; word-wrap:break-word;
 }
 .escape { color: #55f; }
 .tty_cursor { border:1px solid green; }
