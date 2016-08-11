@@ -183,7 +183,8 @@ function rl_tab_insert(count, key) {
 /* What to do when a NEWLINE is pressed.  We accept the whole line. */
 function rl_newline(count, key) {
     rl_history_append();
-    write('\n');
+    write('\x1b[J');  // clear screen below
+    write('\n');  // next line
     rl_linefunc(rl_line_buffer + '\n');
 
     rl_line_buffer = '';
