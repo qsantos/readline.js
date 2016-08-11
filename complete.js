@@ -82,6 +82,47 @@ function rl_completion_matches(text, entry_function) {
     return ret;
 }
 
+/* A convenience function for displaying a list of strings in
+   columnar format on readline's output stream.  MATCHES is the list
+   of strings. */
+function rl_display_match_list(matches) {
+    // find length of the widest string
+    var lengths = matches.map(function(s){ return s.length; });
+    var max = Math.max.apply(null, lengths);
+    max += 2;
+
+    // compute the number of matches to print in each line
+    var cols = 79;
+    var limit = Math.floor(cols / max);
+    if (limit < 1) {
+        limit = 1;
+    }
+
+    matches.sort();
+
+    // temporarily go to next line
+    write('\x1b[s');  // save cursor state
+    write('\x1b[J');  // clear screen below
+    write('\n');  // next line
+
+    // show all the matches
+    for (var i = 0; i < matches.length; ) {
+        var x = '';
+        for (var j = 0; i < matches.length && j < limit; j++, i++) {
+            write(matches[i]);
+            x += matches[i];
+            for (var k = 0; k < max - matches[i].length; k++) {
+                write(' ');
+                x += ' ';
+            }
+        }
+        write('\n');
+    }
+
+    // restore cursor state
+    write('\x1b[u');
+}
+
 /* Display MATCHES.  We also check
    that the list of matches doesn't exceed the user-settable threshold,
    and ask the user if he wants to see the list if there are more matches
@@ -89,32 +130,34 @@ function rl_completion_matches(text, entry_function) {
 function display_matches(matches) {
     rl_redisplay();  // avoid a redisplay from clearing out the confirmation
 
+    // if few matches, just print them
+    if (rl_completion_query_items <= 0 || matches.length < rl_completion_query_items) {
+        rl_display_match_list(matches);
+        return;
+    }
+
     // temporarily go to next line
     write('\x1b[s');  // save cursor state
     write('\n');  // next line
     write('\x1b[2K');  // clear line
 
-    // if few matches, just print them
-    if (rl_completion_query_items <= 0 || matches.length < rl_completion_query_items) {
-        write(matches.join(' '));
-        write('\x1b[u');  // restore cursor state
-        return;
-    }
-
     // demand confirmation before printing many matches
     write('Display all ' + matches.length + ' possibilities? (y or n)');
+    tty_redisplay();
     function yesno(key) {
-        if (key == 'y') {
-            write('\x1b[2K');  // clear line
-            write('\r');  // beginning of line
-            write(matches.join(' '));
-            write('\x1b[u');  // restore cursor state
-        } else if (key == 'n') {
-            write('\x1b[2K');  // clear line
-            write('\x1b[u');  // restore cursor state
-        } else {
-            // loop until answer is either 'y' or 'n'
+        // ask until answer is either 'y' or 'n'
+        if (key != 'y' && key != 'n') {
             rl_read_key(yesno);
+            return;
+        }
+
+        // restore screen state
+        write('\x1b[2K');  // clear line
+        write('\r');  // beginning of line
+        write('\x1b[u');  // restore cursor state
+
+        if (key == 'y') {
+            rl_display_match_list(matches);
         }
     }
     rl_read_key(yesno);
