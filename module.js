@@ -2,7 +2,7 @@
    (see https://docs.python.org/3/library/readline.html) */
 
 // make sure readline is defined
-//readline = readline || {};
+readline = readline || {};
 
 // first, some useful basic functions
 
