@@ -71,8 +71,44 @@ readline.input('\x1b[32m>\x1b[m ', function(line) {
             window._ = res;
         }
     } catch (err) {
-        readline.write('Traceback (most recent call last):');
-        readline.write(err.stack.split('\n').reverse().join('\n   ') + '\n');
+        readline.write('Traceback (most recent call last):\n');
+
+        // get the stack trace
+        var stack = err.stack;
+        // put the stack into a list
+        stack = stack.trim().split('\n').reverse();
+        // remove internal calls from stack trace
+        stack = stack.slice(4);
+        // reformat like in CPython
+        var depth = 0;
+        stack = stack.map(function(line) {
+            // parse a line in the stack trace
+            var match = line.match(/^(.*?)@https?:\/?\/?.*?\/(.*):([0-9]*):[0-9]*?/);
+            if (!match) {
+                return line;
+            }
+
+            // extract information
+            var function_name = match[1] || '<lambda>';
+            // proper name for context of first call
+            depth += 1;
+            if (depth == 1) {
+                function_name = '<module>';
+            }
+            var filename = match[2];
+            // special handling for everything from TTY
+            if (filename.startsWith('jsrepl.js line')) {
+                filename = '<stdin>';
+            }
+            var line_number = match[3];
+
+            // format information CPython-style
+            return 'File "' + filename + '", line ' + line_number + ', in ' + function_name;
+        });
+        // display the stack
+        readline.write('    ' + stack.join('\n    ') + '\n');
+
+        // display the error message
         readline.write('\x1b[1;31m' + err.name + '\x1b[m: ' + err.message + '\n');
     }
 });
