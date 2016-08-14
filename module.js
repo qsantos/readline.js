@@ -1,9 +1,25 @@
 /* Export some functions in a module named `readline`
    (see https://docs.python.org/3/library/readline.html) */
 
+// make sure readline is defined
 //readline = readline || {};
 
+// first, some useful basic functions
+
+// rough callback-based equivalent of Python's input()
+readline.input = function(prompt, callback) {
+    rl_prompt = prompt;
+    rl_linefunc = callback;
+    rl_redisplay();
+}
+
+// rough equivalent of Python's sys.stdout.write
+readline.write = write;
+
+/*************/
 /* Init file */
+/*************/
+
 //readline.parse_and_bind(string)
 //readline.read_init_file([filename])
 
