@@ -1,7 +1,6 @@
 /* Rough equivalent of display.c */
-
-var tty = document.querySelector('#tty');
 // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/isComposing
+
 var isComposing = false;
 
 var rl_previous_point;
@@ -73,111 +72,116 @@ function rl_callback_handler_install(prompt, linefunc) {
     rl_redisplay();
 }
 
-tty.addEventListener('focus', function(event) {
-    document.querySelector('#unfocus_help').style.visibility = 'visible';
-});
+function readline_init(tty) {
+    tty = tty || document.querySelector('#tty');
 
-tty.addEventListener('blur', function(event) {
-    document.querySelector('#unfocus_help').style.visibility = 'hidden';
-});
+    tty.addEventListener('focus', function(event) {
+        document.querySelector('#unfocus_help').style.visibility = 'visible';
+    });
 
-tty.addEventListener('keydown', function(event) {
-    if (isComposing) {
-        return;
-    }
+    tty.addEventListener('blur', function(event) {
+        document.querySelector('#unfocus_help').style.visibility = 'hidden';
+    });
 
-    if (event.key == 'Control' && event.location == 2) {  // right control
-        tty.blur();
-        rl_redisplay();
-        event.stopPropagation();
-    } else if (event.key == 'V' && event.ctrlKey) {  // Ctrl+Shift+V = pasting
-    } else if (!event.ctrlKey && !event.altKey && event.key.length == 1) {
-        // on Firefox, compositionstart is preceded by the keydown of the first
-        // typed character; to prevent this, we delay the handling of simple
-        // printable characters to keypress, which is not fired before a
-        // composititonstart
-    } else if (rl_handle_event(event)) {
-        rl_redisplay();
-        // on Chromium, catching all key presses prevents compositions; thus,
-        // we only catch key presses that are actually used by readline
-        event.preventDefault();
-    }
-});
-
-// handle simple printable characters
-tty.addEventListener('keypress', function(event) {
-    if (isComposing) {
-        return;
-    }
-
-    // Ctrl+Shift+V = pasting
-    if (event.key == 'V' && event.ctrlKey) {
-        return;
-    }
-
-    if (rl_handle_event(event)) {
-        rl_redisplay();
-    }
-    event.preventDefault();
-});
-
-// https://github.com/liftoff/GateOne/issues/188
-tty.addEventListener('compositionstart', function(event) {
-    isComposing = true;
-    rl_redisplay();
-    event.preventDefault();
-});
-
-tty.addEventListener('compositionend', function(event) {
-    isComposing = false;
-    event.preventDefault();
-
-    if (!event.data) {
-        return;
-    }
-
-    var count = rl_numeric_arg * rl_arg_sign;
-    count = Math.min(count, 1000000);
-
-    rl_insert_text(event.data, count);
-
-    _rl_last_func = null;
-    if (_rl_last_command_was_kill > 0) {
-        _rl_last_command_was_kill--;
-    }
-    rl_discard_argument();
-
-    // on Chromium, the insertion of the composition happens *after*
-    // compositionend; to avoid it from being inserted regardless, we postpone
-    // the refresh of the screen until this has taken place, using a 0 ms delay
-    setTimeout(rl_redisplay, 0);
-});
-
-tty.addEventListener('paste', function(event) {
-    rl_insert_text(event.clipboardData.getData("text/plain"));
-    rl_redisplay();
-    event.preventDefault();
-});
-
-tty.addEventListener('drop', function(event) {
-    var data = event.dataTransfer;
-    var text;
-    if (data.types.contains("text/x-moz-url")) { // file
-        text = data.getData("text/x-moz-url");
-        // strip file:// prefix
-        if (text.startsWith("file://")) {
-            text = text.substring(7);
+    tty.addEventListener('keydown', function(event) {
+        if (isComposing) {
+            return;
         }
-    } else if (data.types.contains("text/x-moz-text-internal")) {  // tab
-        text = data.getData("text/x-moz-text-internal");
-    } else { // Other
-        text = data.getData("text/plain");
-    }
-    rl_insert_text(text);
-    rl_redisplay();
-    event.preventDefault();
-});
 
-var PS1 = '\x1b[32m$\x1b[m ';
-rl_callback_handler_install(PS1, write);
-tty.focus();
+        if (event.key == 'Control' && event.location == 2) {  // right control
+            tty.blur();
+            rl_redisplay();
+            event.stopPropagation();
+        } else if (event.key == 'V' && event.ctrlKey) {  // pasting
+        } else if (!event.ctrlKey && !event.altKey && event.key.length == 1) {
+            // Firefox: compositionstart is preceded by the keydown of the
+            // first typed character; to prevent this, we delay the handling of
+            // simple printable characters to keypress, which is not fired
+            // before a composititonstart
+        } else if (rl_handle_event(event)) {
+            rl_redisplay();
+            // Chromium: catching all key presses prevents compositions; thus,
+            // we only catch key presses that are actually used by readline
+            event.preventDefault();
+        }
+    });
+
+    // handle simple printable characters
+    tty.addEventListener('keypress', function(event) {
+        if (isComposing) {
+            return;
+        }
+
+        // Ctrl+Shift+V = pasting
+        if (event.key == 'V' && event.ctrlKey) {
+            return;
+        }
+
+        if (rl_handle_event(event)) {
+            rl_redisplay();
+        }
+        event.preventDefault();
+    });
+
+    // https://github.com/liftoff/GateOne/issues/188
+    tty.addEventListener('compositionstart', function(event) {
+        isComposing = true;
+        rl_redisplay();
+        event.preventDefault();
+    });
+
+    tty.addEventListener('compositionend', function(event) {
+        isComposing = false;
+        event.preventDefault();
+
+        if (!event.data) {
+            return;
+        }
+
+        var count = rl_numeric_arg * rl_arg_sign;
+        count = Math.min(count, 1000000);
+
+        rl_insert_text(event.data, count);
+
+        _rl_last_func = null;
+        if (_rl_last_command_was_kill > 0) {
+            _rl_last_command_was_kill--;
+        }
+        rl_discard_argument();
+
+        // Chromium: the insertion of the composition happens *after*
+        // compositionend; to avoid it from being inserted regardless, we
+        // postpone the refresh of the screen until this has taken place, using
+        // a 0 ms delay
+        setTimeout(rl_redisplay, 0);
+    });
+
+    tty.addEventListener('paste', function(event) {
+        rl_insert_text(event.clipboardData.getData("text/plain"));
+        rl_redisplay();
+        event.preventDefault();
+    });
+
+    tty.addEventListener('drop', function(event) {
+        var data = event.dataTransfer;
+        var text;
+        if (data.types.contains("text/x-moz-url")) { // file
+            text = data.getData("text/x-moz-url");
+            // strip file:// prefix
+            if (text.startsWith("file://")) {
+                text = text.substring(7);
+            }
+        } else if (data.types.contains("text/x-moz-text-internal")) {  // tab
+            text = data.getData("text/x-moz-text-internal");
+        } else { // Other
+            text = data.getData("text/plain");
+        }
+        rl_insert_text(text);
+        rl_redisplay();
+        event.preventDefault();
+    });
+
+    PS1 = '\x1b[32m$\x1b[m ';
+    rl_callback_handler_install(PS1, write);
+    tty.focus();
+}

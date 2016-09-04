@@ -1,4 +1,6 @@
 /* Completer function for Javascript. */
+readline.init()
+
 readline.set_completer(function(text, state) {
     // sum up: evaluate as much of text as possible;
     //         list matching properties of result

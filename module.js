@@ -6,6 +6,8 @@ readline = readline || {};
 
 // first, some useful basic functions
 
+readline.init = readline_init;
+
 // rough callback-based equivalent of Python's input()
 readline.input = function(prompt, callback) {
     rl_prompt = prompt;
