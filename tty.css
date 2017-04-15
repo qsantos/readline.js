@@ -7,6 +7,7 @@
     resize:both; overflow-y:scroll;
     font-family:monospace; word-wrap:break-word;
 }
+.native_caret { color:black;/*same as #tty's background*/ }
 .escape { color: #55f; }
 .tty_cursor { border:1px solid green; }
 /* Do not merge */

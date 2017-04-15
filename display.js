@@ -72,11 +72,28 @@ function rl_callback_handler_install(prompt, linefunc) {
     rl_redisplay();
 }
 
+function reset_native_caret() {
+    // position native caret at the end of the TTY
+    // this lets us hide it with a simple <span>
+    var range = document.createRange();
+    range.setStart(tty.lastChild, 0);
+    range.collapse(true);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
 function readline_init(tty) {
     tty = tty || document.querySelector('#tty');
 
+    tty.addEventListener('click', function(event) {
+        // TODO: move virtual caret at native caret position
+        reset_native_caret();
+    });
+
     tty.addEventListener('focus', function(event) {
         document.querySelector('#unfocus_help').style.visibility = 'visible';
+        reset_native_caret();
     });
 
     tty.addEventListener('blur', function(event) {

@@ -200,17 +200,12 @@ function tty_redisplay() {
         tty.setSelectionRange(index, index+1);
     } else {
         // fill
-        tty.innerHTML = tty2html();
+        // the final <span> lets us choose the native caret's color and hide it
+        var caret_hider = '<span class="native_caret"></span>';
+        tty.innerHTML = tty2html() + caret_hider;
 
         // position native caret
-        if (tty.matches(':focus')) {  // if focused
-            var range = document.createRange();
-            range.setStart(document.querySelector('.tty_cursor'), 0);
-            range.collapse(true);
-            var sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-        }
+        reset_native_caret();
     }
     tty.scrollTop = tty.scrollHeight;
 }
