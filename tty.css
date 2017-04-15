@@ -1,10 +1,10 @@
 #tty {
     display: block;
     line-height: 1.1em;
-    width:83ch; height:30em; margin:0 auto;
+    width:82ch;/*scrollbar=2ch*/ height:30em; margin:0 auto;
     color:white; background-color:black;
     border:3px solid #e8e8e8;
-    resize:both; overflow:scroll;
+    resize:both; overflow-y:scroll;
     font-family:monospace; word-wrap:break-word;
 }
 .escape { color: #55f; }
